@@ -30,8 +30,8 @@
                 <Font size="31.0"/>
             </font>
         </Text>
-        <JFXTextField fx:id="bk_sch" layoutX="121.0" layoutY="195.0" prefHeight="25.0" prefWidth="346.0"
-                      promptText="Search Id"/>
+        <TextField fx:id="bk_sch" layoutX="121.0" layoutY="195.0" prefHeight="25.0" prefWidth="346.0"
+                   promptText="Search Id"/>
         <TableView fx:id="tbl_bk" layoutX="72.0" layoutY="248.0" maxHeight="-Infinity" maxWidth="-Infinity"
                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="456.0">
             <columns>
