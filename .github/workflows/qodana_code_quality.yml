@@ -1,9 +1,3 @@
-version: "1.0"
-linter: jetbrains/qodana-jvm:2024.2
-profile:
-  name: qodana.recommended
-include:
-  - name: CheckDependencyLicenses
 name: Qodana
 on:
   workflow_dispatch:
@@ -11,6 +5,7 @@ on:
   push:
     branches: # Specify your branches here
       - main # The 'main' branch
+      - master
       - 'releases/*' # The release branches
 
 jobs:
@@ -20,6 +15,9 @@ jobs:
       contents: write
       pull-requests: write
       checks: write
+    strategy:
+      matrix:
+        java: ['17']
     steps:
       - uses: actions/checkout@v3
         with:
