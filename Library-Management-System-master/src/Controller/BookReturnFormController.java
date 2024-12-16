@@ -14,9 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -35,11 +33,11 @@ import java.util.concurrent.TimeUnit;
 
 public class BookReturnFormController {
     public AnchorPane Returnroot;
-    public JFXTextField txt_issu_date;
-    public JFXTextField txt_fine;
-    public JFXDatePicker txt_rt_date;
+    public TextField txt_issu_date;
+    public TextField txt_fine;
+    public DatePicker txt_rt_date;
     public TableView<BookReturnTM> rt_tbl;
-    public JFXComboBox cmb_issue_id;
+    public ComboBox cmb_issue_id;
     private Connection connection;
 
     public void initialize() throws ClassNotFoundException {

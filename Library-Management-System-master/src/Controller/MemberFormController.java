@@ -15,9 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -37,15 +35,15 @@ import java.util.Optional;
 
 public class MemberFormController {
 
-    public JFXTextField mem_id;
-    public JFXTextField mem_nme;
-    public JFXTextField mem_addss;
-    public JFXTextField mem_num;
+    public TextField mem_id;
+    public TextField mem_nme;
+    public TextField mem_addss;
+    public TextField mem_num;
     public TableView<MemberTM> mem_tbl;
     public ImageView img_bk;
     public AnchorPane root;
-    public JFXButton btn_new;
-    public JFXButton btn_add;
+    public Button btn_new;
+    public Button btn_add;
 
     //JDBC
     private Connection connection;

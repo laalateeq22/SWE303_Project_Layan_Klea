@@ -15,9 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -36,13 +34,13 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class BookFormController {
-    public JFXTextField txt_bk_id;
-    public JFXTextField txt_bk_title;
-    public JFXTextField txt_bk_auth;
-    public JFXTextField txt_bk_st;
+    public TextField txt_bk_id;
+    public TextField  txt_bk_title;
+    public TextField  txt_bk_auth;
+    public TextField  txt_bk_st;
     public TableView<BookTM> tbl_bk;
     public AnchorPane bk_root;
-    public JFXButton btn_add;
+    public Button btn_add;
     private Connection connection;
 
     //JDBC

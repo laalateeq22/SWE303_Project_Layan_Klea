@@ -33,16 +33,16 @@
             </font>
         </Text>
         <Pane layoutX="590.0" prefHeight="600.0" prefWidth="11.0" style="-fx-background-color: #2ecc71;"/>
-        <JFXTextField fx:id="txt_issu_date" layoutX="141.0" layoutY="202.0" prefHeight="25.0" prefWidth="318.0"
-                      promptText="Issue Date"/>
-        <JFXTextField fx:id="txt_fine" layoutX="141.0" layoutY="275.0" prefHeight="25.0" prefWidth="318.0"
-                      promptText="Fine"/>
-        <JFXDatePicker fx:id="txt_rt_date" layoutX="141.0" layoutY="238.0" prefHeight="28.0" prefWidth="330.0"
-                       promptText="Returned Date"/>
-        <JFXButton layoutX="135.0" layoutY="336.0" onAction="#btn_new" prefHeight="25.0" prefWidth="131.0"
-                   style="-fx-background-color: #f1c40f;" text="+New"/>
-        <JFXButton layoutX="345.0" layoutY="336.0" onAction="#btn_add_inveb" prefHeight="25.0" prefWidth="131.0"
-                   style="-fx-background-color: #2ecc71;" text="Add To Inventory"/>
+        <TextField fx:id="txt_issu_date" layoutX="141.0" layoutY="202.0" prefHeight="25.0" prefWidth="318.0"
+                   promptText="Issue Date"/>
+        <TextField fx:id="txt_fine" layoutX="141.0" layoutY="275.0" prefHeight="25.0" prefWidth="318.0"
+                   promptText="Fine"/>
+        <DatePicker fx:id="txt_rt_date" layoutX="141.0" layoutY="238.0" prefHeight="28.0" prefWidth="330.0"
+                    promptText="Returned Date"/>
+        <Button layoutX="135.0" layoutY="336.0" onAction="#btn_new" prefHeight="25.0" prefWidth="131.0"
+                style="-fx-background-color: #f1c40f;" text="+New"/>
+        <Button layoutX="345.0" layoutY="336.0" onAction="#btn_add_inveb" prefHeight="25.0" prefWidth="131.0"
+                style="-fx-background-color: #2ecc71;" text="Add To Inventory"/>
         <TableView fx:id="rt_tbl" layoutX="68.0" layoutY="378.0" prefHeight="200.0" prefWidth="465.0">
             <columns>
                 <TableColumn fx:id="iss_id_col" prefWidth="78.0" text="Issue ID"/>
@@ -54,8 +54,8 @@
                 <InnerShadow/>
             </effect>
         </TableView>
-        <JFXComboBox fx:id="cmb_issue_id" layoutX="141.0" layoutY="163.0" prefHeight="25.0" prefWidth="318.0"
-                     promptText="Issue ID"/>
+        <ComboBox fx:id="cmb_issue_id" layoutX="141.0" layoutY="163.0" prefHeight="25.0" prefWidth="318.0"
+                  promptText="Issue ID"/>
         <Pane layoutX="126.0" layoutY="134.0" prefHeight="5.0" prefWidth="378.0"
               style="-fx-background-color: #2c3e50;"/>
     </children>

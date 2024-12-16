@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -25,7 +26,7 @@ import java.net.URL;
 import java.sql.*;
 
 public class BookSearchFormController {
-    public JFXTextField bk_sch;
+    public TextField bk_sch;
     public TableView<BookTM> tbl_bk;
     public AnchorPane sch_root;
     private Connection connection;
@@ -38,7 +39,10 @@ public class BookSearchFormController {
         tbl_bk.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("status"));
 
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "1234");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library",
+                    "root",
+                    "");
             ObservableList<BookTM> books = tbl_bk.getItems();
 
             String sql = "SELECT * from bookdetail";
@@ -65,7 +69,10 @@ public class BookSearchFormController {
 
 
                     try {
-                        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "1234");
+                        Connection connection = DriverManager.getConnection(
+                                "jdbc:mysql://localhost:3306/library",
+                                "root",
+                                "");
                         String sql = "Select * FROM bookdetail where id like ? OR title like ? OR author like ?";
                         PreparedStatement pstm = connection.prepareStatement(sql);
                         String like = "%" + searchText + "%";
