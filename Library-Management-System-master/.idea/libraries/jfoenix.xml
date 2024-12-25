@@ -1,0 +1,23 @@
+<component name="libraryTable">
+  <library name="jfoenix">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/adapters" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/animation" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/assets" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/bindings" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/controls" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/cache" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/converters" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/effects" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/responsive" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/skins" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/svg" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/transitions" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/utils" />
+      <root url="file://$PROJECT_DIR$/../../com/jfoenix/validation" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

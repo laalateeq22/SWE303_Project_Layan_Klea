@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f1b2f38e-ed45-4da4-915e-ffb20713841b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Library-Management-System.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Qodana" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/jfoenix-1.8.0.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/mysql-connector-java-5.1.48.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/AppInitializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Controller/BookFormController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Controller/BookIssueFormController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Controller/BookReturnFormController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Controller/BookSearchFormController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Controller/HomeFormController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Controller/MemberFormController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Images/back.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Images/books.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Images/issue.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Images/members.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Images/return.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Images/search.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/BookIssueTM.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/BookReturnTM.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/BookTM.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Model/MemberTM.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/BookIssueFormView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/BookReturnFormView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/BookSearchFormView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/BooksFormView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/HomeFormView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/MembersFormView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/db/DB.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/db/DBConnection.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="2qj3e0w5YVBRtnI1V85y4LBfmCC" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.AppInitializer.executor": "Run",
+    "Application.Unnamed.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/User/Desktop/com/jfoenix/validation",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="AppInitializer" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="AppInitializer" />
+      <module name="Library-Management-System-master" />
+      <option name="VM_PARAMETERS" value="--module-path C:\Users\User\Downloads\javafx-sdk-23.0.1\lib --add-modules=javafx.controls,javafx.fxml " />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.21565.193" />
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-IU-243.21565.193" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f1b2f38e-ed45-4da4-915e-ffb20713841b" name="Changes" comment="" />
+      <created>1735162250961</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1735162250961</updated>
+      <workItem from="1735162252684" duration="600000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
