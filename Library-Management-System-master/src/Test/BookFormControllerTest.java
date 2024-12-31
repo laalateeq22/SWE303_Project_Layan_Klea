@@ -83,6 +83,9 @@ public class BookFormControllerTest {
 
     @Test
     public void validUpdate() throws SQLException {
+
+        AllValid();
+
         bookFormController.txt_bk_id.setText("1");
         bookFormController.txt_bk_title.setText("gingerbread man");
         bookFormController.txt_bk_auth.setText("layan");
@@ -95,6 +98,7 @@ public class BookFormControllerTest {
 
     @Test
     public void unchangedUpdate() throws SQLException {
+
         bookFormController.txt_bk_id.setText("1");
         bookFormController.txt_bk_title.setText("harry potter");
         bookFormController.txt_bk_auth.setText("jk rowling ");
@@ -103,6 +107,102 @@ public class BookFormControllerTest {
         bookFormController.btn_Add(new ActionEvent());
 
         assertNull(mockAlertDisplay.getCapturedMessage());
+    }
+
+    @Test
+    public void BVTTitle() throws SQLException{
+        //min:
+        bookFormController.txt_bk_id.setText("001");
+        bookFormController.txt_bk_title.setText("A");
+        bookFormController.txt_bk_auth.setText("layan");
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Record added successfully.", mockAlertDisplay.getCapturedMessage());
+
+        //max:
+        String maxTitle = "A".repeat(255);
+        bookFormController.txt_bk_id.setText("001");
+        bookFormController.txt_bk_title.setText(maxTitle);
+        bookFormController.txt_bk_auth.setText("layan");
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Record added successfully.", mockAlertDisplay.getCapturedMessage());
+
+        //overflow
+        String overflowTitle = "A".repeat(256);
+        bookFormController.txt_bk_id.setText("12345");
+        bookFormController.txt_bk_title.setText(overflowTitle);
+        bookFormController.txt_bk_auth.setText("layan");
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Entered detail Invalid", mockAlertDisplay.getCapturedMessage());
+    }
+
+    @Test
+    public void BVTAuthur() throws SQLException{
+        //min:
+        bookFormController.txt_bk_id.setText("001");
+        bookFormController.txt_bk_title.setText("snowman and me");
+        bookFormController.txt_bk_auth.setText("A");
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Record added successfully.", mockAlertDisplay.getCapturedMessage());
+
+        //max:
+        String maxAuthor = "A".repeat(255);
+        bookFormController.txt_bk_id.setText("12345");
+        bookFormController.txt_bk_title.setText("layan");
+        bookFormController.txt_bk_auth.setText(maxAuthor);
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Record added successfully.", mockAlertDisplay.getCapturedMessage());
+
+        //overflow
+        String overflowAuthor = "A".repeat(256);
+        bookFormController.txt_bk_id.setText("011");
+        bookFormController.txt_bk_title.setText("layan");
+        bookFormController.txt_bk_auth.setText(overflowAuthor);
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Entered detail Invalid", mockAlertDisplay.getCapturedMessage());
+    }
+
+    @Test
+    public void BVTID() throws SQLException{
+        //min:
+        bookFormController.txt_bk_id.setText("1");
+        bookFormController.txt_bk_title.setText("harry potter");
+        bookFormController.txt_bk_auth.setText("jk rowling ");
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Record added successfully.", mockAlertDisplay.getCapturedMessage());
+
+        //max
+        bookFormController.txt_bk_id.setText("12345");
+        bookFormController.txt_bk_title.setText("harry potter");
+        bookFormController.txt_bk_auth.setText("jk rowling");
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Record added successfully.", mockAlertDisplay.getCapturedMessage());
+
+
+        //overflow
+        String overFlowTitle = "A".repeat(256);
+        bookFormController.txt_bk_id.setText("011");
+        bookFormController.txt_bk_title.setText(overFlowTitle);
+        bookFormController.txt_bk_auth.setText("Layan");
+        bookFormController.btn_add.setText("Add");
+
+        bookFormController.btn_Add(new ActionEvent());
+        assertEquals("Entered detail Invalid", mockAlertDisplay.getCapturedMessage());
     }
 
 }

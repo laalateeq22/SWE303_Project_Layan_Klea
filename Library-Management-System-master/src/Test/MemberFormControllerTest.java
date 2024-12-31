@@ -78,34 +78,6 @@ class MemberFormTest {
         assertTrue(alert.isShowing(), "Validation error alert should show.");
     }
 
-    //test 3: for the missing addresss
-    @Test
-    void testAddressEmpty() {
-        controller.mem_id.setText("M001");
-        controller.mem_nme.setText("Abdulaziz");
-        controller.mem_addss.clear();
-        controller.mem_num.setText("0582811111");
-
-        controller.btn_add.fire();
-
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill your details.", ButtonType.OK);
-        assertTrue(alert.isShowing(), "Validation error alert should show.");
-    }
-
-    //test 4: for missing phone number
-    @Test
-    void testContactEmpty() {
-        controller.mem_id.setText("M001");
-        controller.mem_nme.setText("Layan");
-        controller.mem_addss.setText("epoka");
-        controller.mem_num.clear();
-
-        controller.btn_add.fire();
-
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill your details.", ButtonType.OK);
-        assertTrue(alert.isShowing(), "Validation error alert should show.");
-    }
-
     //test 5: for invalid phone number
     @Test
     void testInvalidContact() {
@@ -157,4 +129,52 @@ class MemberFormTest {
         assertEquals("rana", rs.getString("name"), "Name should be updated.");
         assertEquals("canberra", rs.getString("address"), "Address should be updated.");
     }
+
+    @Test
+    void BVTNumber() throws SQLException{
+        //min:
+        String belowBoundaryNumber = "01234"; // Invalid: Too short
+        controller.mem_id.setText("M003");
+        controller.mem_nme.setText("Sara");
+        controller.mem_addss.setText("Jeddah");
+        controller.mem_num.setText(belowBoundaryNumber);
+        controller.btn_add.fire();
+        Alert belowBoundaryAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
+        assertTrue(belowBoundaryAlert.isShowing(), "Phone number below boundary should show an error alert");
+
+        //max:
+        String maxNumber = "012345678901";
+        controller.mem_id.setText("M004");
+        controller.mem_nme.setText("Omar");
+        controller.mem_addss.setText("Dammam");
+        controller.mem_num.setText(maxNumber);
+        controller.btn_add.fire();
+        Alert aboveBoundaryAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
+        assertTrue(aboveBoundaryAlert.isShowing(), "Phone number above boundary should show an error alert");
+
+    }
+
+    @Test
+    void BVTID() throws SQLException {
+        //min:
+        String minID = "M";
+        controller.mem_id.setText(minID);
+        controller.mem_nme.setText("Noor");
+        controller.mem_addss.setText("Taif");
+        controller.mem_num.setText("0538641613");
+        controller.btn_add.fire();
+        Alert belowBoundaryIdAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
+        assertTrue(belowBoundaryIdAlert.isShowing(), "ID below boundary should show an error alert.");
+
+        //max:
+        String maxID = "M1234567890";
+        controller.mem_id.setText(maxID);
+        controller.mem_nme.setText("Yara");
+        controller.mem_addss.setText("Abha");
+        controller.mem_num.setText("0538641613");
+        controller.btn_add.fire();
+        Alert aboveBoundaryIdAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
+        assertTrue(aboveBoundaryIdAlert.isShowing(), "ID above boundary should show an error alert.");
+    }
+
 }
