@@ -7,8 +7,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="lib" level="project" />
-    <orderEntry type="library" exported="" name="jfoenix" level="project" />
-    <orderEntry type="library" exported="" name="javafx-swt" level="project" />
+    <orderEntry type="library" exported="" name="opentest4j-1.2.0" level="project" />
+    <orderEntry type="library" exported="" name="javafx.web" level="project" />
+    <orderEntry type="library" exported="" name="testfx.junit5" level="project" />
+    <orderEntry type="library" exported="" name="jfoenix-1.8.0" level="project" />
   </component>
 </module>

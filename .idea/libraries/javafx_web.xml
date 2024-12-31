@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="javafx.web">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx.web.jar!/" />
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx.swing.jar!/" />
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx.media.jar!/" />
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx.graphics.jar!/" />
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx.fxml.jar!/" />
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx.controls.jar!/" />
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx-swt.jar!/" />
+      <root url="jar://$USER_HOME$/Music/javafx-sdk-23.0.1/lib/javafx.base.jar!/" />
+      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$USER_HOME$/Music/javafx-sdk-23.0.1/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/Library-Management-System-master/src" />
+    </SOURCES>
+    <jarDirectory url="file://$USER_HOME$/Music/javafx-sdk-23.0.1/lib" recursive="false" />
+  </library>
+</component>

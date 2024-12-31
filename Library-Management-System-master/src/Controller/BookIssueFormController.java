@@ -44,7 +44,7 @@ public class BookIssueFormController {
     public ComboBox book_id;
     public TableView<BookIssueTM> bk_ssue_tbl;
     public AnchorPane bk_iss;
-    private Connection connection;
+    public Connection connection;
 
     //JDBC
     private PreparedStatement selectALl;
