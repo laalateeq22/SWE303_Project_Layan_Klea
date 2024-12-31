@@ -1,23 +1,10 @@
 version: "1.0"
-
-# Specify inspection profile for code analysis
+linter: jetbrains/qodana-jvm:2024.2
 profile:
-  name: qodana.starter
-
-# Include specific files or patterns for analysis
+  name: qodana.recommended
 include:
-  - name: "**/*Controller*"
-  - name: "**/db/*"
-  - name: "**/*Model*"
-  - name: "**/*View*"
-  - name: "**/AppInitializer*"
-
-# Exclude specific files or patterns from analysis
+  - name: CheckDependencyLicenses
 exclude:
-  - name: "**/Images/**"  # Ensure this matches your project's image directory path
-
-# Specify the JDK version for project analysis
-projectJDK: "23"
-
-# Specify the Qodana linter
-linter: jetbrains/qodana-jvm:2024.3
+  - name: All
+    paths:
+      - Library-Management-System-master/src/Controller
