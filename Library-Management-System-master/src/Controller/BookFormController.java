@@ -1,8 +1,6 @@
 package Controller;
 
 import Model.BookTM;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
 import db.DB;
 import db.DBConnection;
 import javafx.animation.ScaleTransition;
@@ -16,7 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+        import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -24,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import mocks.MockAlert;
 
 import java.io.IOException;
 import java.net.URL;
@@ -217,30 +216,7 @@ public class BookFormController {
 
     //button delete action
     public void btn_dlt(ActionEvent actionEvent) throws SQLException {
-        BookTM selectedItem = tbl_bk.getSelectionModel().getSelectedItem();
-        if (tbl_bk.getSelectionModel().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Please select a member.",
-                    ButtonType.OK);
-            Optional<ButtonType> buttonType = alert.showAndWait();
-            return;
-        } else {
-            deleteQuarary.setString(1, selectedItem.getId());
-            int affected = deleteQuarary.executeUpdate();
 
-            if (affected > 0) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                        "Record deleted!",
-                        ButtonType.OK);
-                Optional<ButtonType> buttonType = alert.showAndWait();
-            }
-        }
-        try {
-            tbl_bk.getItems().clear();
-            initialize();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     public void img_back(MouseEvent event) throws IOException {
@@ -273,5 +249,17 @@ public class BookFormController {
             glow.setRadius(20);
             icon.setEffect(glow);
         }
+    }
+
+
+    public void setAddToTable(PreparedStatement addToTable) {
+        this.addToTable = addToTable;
+    }
+
+    public void setUpdateQuarary(PreparedStatement updateQuarary) {
+        this.updateQuarary = updateQuarary;
+    }
+
+    public void setAlertHandler(MockAlert mockAlertDisplay) {
     }
 }

@@ -1,7 +1,6 @@
 package Controller;
 
 import Model.BookTM;
-import com.jfoenix.controls.JFXTextField;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
@@ -135,5 +134,6 @@ public class BookSearchFormController {
             icon.setEffect(glow);
         }
     }
+
 }
 

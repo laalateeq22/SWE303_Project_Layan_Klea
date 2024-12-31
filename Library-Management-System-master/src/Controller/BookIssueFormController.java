@@ -2,9 +2,6 @@ package Controller;
 
 import Model.BookIssueTM;
 import Model.BookTM;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXDatePicker;
-import com.jfoenix.controls.JFXTextField;
 import db.DB;
 import db.DBConnection;
 import javafx.animation.ScaleTransition;
@@ -44,7 +41,7 @@ public class BookIssueFormController {
     public ComboBox book_id;
     public TableView<BookIssueTM> bk_ssue_tbl;
     public AnchorPane bk_iss;
-    private Connection connection;
+    public Connection connection;
 
     //JDBC
     private PreparedStatement selectALl;

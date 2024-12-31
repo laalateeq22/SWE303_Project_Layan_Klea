@@ -1,9 +1,6 @@
 package Controller;
 
 import Model.BookReturnTM;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXDatePicker;
-import com.jfoenix.controls.JFXTextField;
 import db.DBConnection;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;

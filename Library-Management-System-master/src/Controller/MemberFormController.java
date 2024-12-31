@@ -1,8 +1,6 @@
 package Controller;
 
 import Model.MemberTM;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
 import db.DB;
 import db.DBConnection;
 import javafx.animation.ScaleTransition;
@@ -278,5 +276,17 @@ public class MemberFormController {
         tt.setFromX(-scene.getWidth());
         tt.setToX(0);
         tt.play();
+    }
+
+    public void setAddToTable(PreparedStatement addToTable) {
+        this.addToTable = addToTable;
+    }
+
+    public void setUpdateQuarary(PreparedStatement updateQuarary) {
+        this.updateQuarary = updateQuarary;
+    }
+
+    public void showAlert(Alert alert) {
+        alert.show();
     }
 }
