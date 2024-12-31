@@ -28,7 +28,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-public class  BookReturnFormController {
+public class BookReturnFormController {
     public AnchorPane Returnroot;
     public TextField txt_issu_date;
     public TextField txt_fine;
@@ -36,6 +36,26 @@ public class  BookReturnFormController {
     public TableView<BookReturnTM> rt_tbl;
     public ComboBox cmb_issue_id;
     private Connection connection;
+
+    public static float calculateFine(LocalDate issuedDate, LocalDate returnedDate) {
+        if (issuedDate == null || returnedDate == null) {
+            throw new IllegalArgumentException("Issued and returned dates cannot be null");
+        }
+
+        // Calculate days between issued and returned date
+        long daysDifference = java.time.temporal.ChronoUnit.DAYS.between(issuedDate, returnedDate);
+
+        // Grace period includes up to the 14th day (inclusive)
+        if (daysDifference <= 14) {
+            return 0;
+        }
+
+        // Fine starts on the 15th day
+        long overdueDays = daysDifference - 14;
+        return overdueDays * 15;
+    }
+
+
 
     public void initialize() throws ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
