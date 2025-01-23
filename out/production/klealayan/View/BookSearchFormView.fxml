@@ -13,7 +13,7 @@
             minHeight="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="Controller.BookSearchFormController">
     <children>
-        <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="53.0" layoutY="44.0" onMouseClicked="#img_bk"
+        <ImageView fx:id="img_back" fitHeight="40.0" fitWidth="40.0" layoutX="53.0" layoutY="44.0" onMouseClicked="#img_bk"
                    onMouseExited="#playMouseEnterAnimation" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../Images/back.png"/>

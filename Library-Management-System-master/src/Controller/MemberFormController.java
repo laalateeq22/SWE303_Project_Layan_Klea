@@ -22,6 +22,8 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class MemberFormController {
@@ -59,7 +61,7 @@ public class MemberFormController {
         });
     }
 
-    private void loadAllMembers() {
+    public void loadAllMembers() {
         ObservableList<MemberTM> members = FXCollections.observableArrayList();
         try {
             connection = DBConnection.getInstance().getConnection();
@@ -187,6 +189,7 @@ public class MemberFormController {
             new Alert(Alert.AlertType.ERROR, "Failed to Delete Member", ButtonType.OK).show();
         }
     }
+
     // Modify the deleteMember method to return a boolean
     public boolean deleteMember(int id) {
         try {
@@ -251,4 +254,35 @@ public class MemberFormController {
         return true;
     }
 
+
+    public List<MemberTM> getAllMembers() throws SQLException {
+        List<MemberTM> members = new ArrayList<>();
+        String query = "SELECT * FROM memberdetail";
+
+        // Open a statement and execute the query
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            // Iterate over the result set
+            while (rs.next()) {
+                // Assuming 'ID', 'Name', 'Address', and 'Contact' are columns in your database
+                int id = rs.getInt("ID");
+                String name = rs.getString("Name");
+                String address = rs.getString("Address");
+                String contact = rs.getString("Contact");
+
+                // Create a new MemberTM object and add it to the list
+                MemberTM member = new MemberTM(id, name, address, contact);
+                members.add(member);
+            }
+        }
+
+        return members;
+    }
+
+    public void closeConnection() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    }
 }
