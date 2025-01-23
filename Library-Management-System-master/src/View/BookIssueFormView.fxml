@@ -15,21 +15,21 @@
             style="-fx-background-color: #ecf0f1;" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="Controller.BookIssueFormController">
     <children>
-        <ImageView fx:id="img_back" fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="25.0" onMouseClicked="#back_click"
+        <ImageView fx:id="imgBack" fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="25.0" onMouseClicked="#back_click"
                    onMouseExited="#playMouseEnterAnimation" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@../Images/back.png"/>
+                <Image url="/Images/back.png"/>
             </image>
         </ImageView>
-        <Text layoutX="293.0" layoutY="126.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Book Issue">
+        <Text fx:id="txtHeader" layoutX="293.0" layoutY="126.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Book Issue">
             <font>
                 <Font size="28.0"/>
             </font>
         </Text>
-        <ImageView fitHeight="91.0" fitWidth="98.0" layoutX="184.0" layoutY="50.0" pickOnBounds="true"
+        <ImageView fx:id="imgIssueIcon" fitHeight="91.0" fitWidth="98.0" layoutX="184.0" layoutY="50.0" pickOnBounds="true"
                    preserveRatio="true">
             <image>
-                <Image url="@../Images/issue.png"/>
+                <Image url="/Images/issue.png"/>
             </image>
         </ImageView>
         <Pane layoutX="-1.0" layoutY="1.0" prefHeight="600.0" prefWidth="12.0" style="-fx-background-color: #3498db;"/>
@@ -46,12 +46,14 @@
                   promptText="Member ID  :"/>
         <ComboBox fx:id="book_id" layoutX="140.0" layoutY="272.0" prefHeight="25.0" prefWidth="135.0"
                   promptText="Book ID :"/>
-        <Button layoutX="125.0" layoutY="323.0" onAction="#new_action" prefHeight="25.0" prefWidth="91.0"
+
+        <Button fx:id="btnNew" layoutX="125.0" layoutY="323.0" onAction="#new_action" prefHeight="25.0" prefWidth="91.0"
                 style="-fx-background-color: #f1c40f;" text="+New "/>
-        <Button layoutX="247.0" layoutY="323.0" onAction="#add_Action" prefHeight="25.0" prefWidth="91.0"
+
+        <Button fx:id="btnAdd" layoutX="247.0" layoutY="323.0" onAction="#add_action" prefHeight="25.0" prefWidth="91.0"
                 style="-fx-background-color: #2ecc71;" text="Add"/>
-        <Button layoutX="379.0" layoutY="323.0" onAction="#delete_Action" prefHeight="25.0" prefWidth="91.0"
-                style="-fx-background-color: #e74c3c;" text="Delete"/>
+        <Button fx:id="btnDelete" layoutX="379.0" layoutY="323.0" onAction="#delete_Action" prefHeight="25.0"
+                prefWidth="91.0" style="-fx-background-color: #e74c3c;" text="Delete"/>
         <TableView fx:id="bk_ssue_tbl" layoutX="69.0" layoutY="369.0" prefHeight="200.0" prefWidth="465.0">
             <columns>
                 <TableColumn fx:id="iss_id" prefWidth="75.0" text="ID"/>
