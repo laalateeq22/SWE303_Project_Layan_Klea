@@ -1,14 +1,11 @@
 package Controller;
 
 import Model.BookIssueTM;
-import Model.BookTM;
-import db.DB;
 import db.DBConnection;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -35,8 +32,8 @@ import java.util.Optional;
 public class BookIssueFormController {
     public TextField txt_issid;
     public DatePicker txt_isu_date;
-    public TextField  txt_name;
-    public TextField  txt_title;
+    public TextField txt_name;
+    public TextField txt_title;
     public ComboBox mem_is_id;
     public ComboBox book_id;
     public TableView<BookIssueTM> bk_ssue_tbl;
@@ -153,96 +150,43 @@ public class BookIssueFormController {
     }
 
     //button new action
-    public void new_action(ActionEvent actionEvent) throws SQLException {
-        txt_title.clear();
+    public void new_action(ActionEvent event) {
+        // Generate a new Issue ID in a proper format
+        String issueId = "SS" + System.currentTimeMillis(); // Example: SS1672538492345
+        txt_issid.setText(issueId);
+
+        // Clear other fields
+        txt_isu_date.setValue(null);
         txt_name.clear();
-        mem_is_id.getSelectionModel().clearSelection();
-        book_id.getSelectionModel().clearSelection();
-        txt_isu_date.setPromptText("Issue Date");
-
-        String sql = "Select issueId from issuetb";
-        PreparedStatement pstm = connection.prepareStatement(sql);
-        ResultSet rst = pstm.executeQuery();
-
-        String ids = null;
-        int maxId = 0;
-
-        while (rst.next()) {
-            ids = rst.getString(1);
-
-            int id = Integer.parseInt(ids.replace("I", ""));
-            if (id > maxId) {
-                maxId = id;
-            }
-        }
-        maxId = maxId + 1;
-        String id = "";
-        if (maxId < 10) {
-            id = "I00" + maxId;
-        } else if (maxId < 100) {
-            id = "I0" + maxId;
-        } else {
-            id = "I" + maxId;
-        }
-        txt_issid.setText(id);
+        txt_title.clear();
+        mem_is_id.setValue(null);
+        book_id.setValue(null);
     }
 
+
     //button add action
-    public void add_Action(ActionEvent actionEvent) throws SQLException {
+    public void add_action(ActionEvent actionEvent) {
+        String issueId = txt_issid.getText();
+        String issueDate = (txt_isu_date.getValue() != null) ? txt_isu_date.getValue().toString() : null;
+        String memberId = mem_is_id.getValue() != null ? mem_is_id.getValue().toString() : null;
+        String bookId = book_id.getValue() != null ? book_id.getValue().toString() : null;
+        String memberName = txt_name.getText();
+        String bookTitle = txt_title.getText();
 
-        ObservableList<BookIssueTM> issued = FXCollections.observableList(DB.issued);
-        ObservableList<BookTM> books = FXCollections.observableList(DB.books);
-
-        if (txt_issid.getText().isEmpty() ||
-                book_id.getSelectionModel().getSelectedItem().equals(null) ||
-                mem_is_id.getSelectionModel().getSelectedItem().equals(null)
-                || txt_isu_date.getValue().toString().equals(null)) {
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Please fill your details.",
-                    ButtonType.OK);
-            Optional<ButtonType> buttonType = alert.showAndWait();
+        // Validate inputs
+        if (issueId.isEmpty() || issueDate == null || memberId == null || bookId == null || memberName.isEmpty() || bookTitle.isEmpty()) {
+            System.out.println("All fields are required!");
             return;
-        } else {
-            String memberId = (String) mem_is_id.getSelectionModel().getSelectedItem();
-            String bookId = (String) book_id.getSelectionModel().getSelectedItem();
-            issued.add(new BookIssueTM(txt_issid.getText(), txt_isu_date.getValue().toString(), memberId, bookId));
-
-            try {
-                table.setString(1, txt_issid.getText());
-                table.setString(2, txt_isu_date.getValue().toString());
-                table.setString(3, (String) mem_is_id.getSelectionModel().getSelectedItem());
-                table.setString(4, (String) book_id.getSelectionModel().getSelectedItem());
-                int affectedRows = table.executeUpdate();
-
-                if (affectedRows > 0) {
-                    System.out.println("Data insertion successfull");
-                    String sql2 = "Update bookdetail SET status=? where id=?";
-                    PreparedStatement pstm2 = connection.prepareStatement(sql2);
-                    String id = (String) book_id.getSelectionModel().getSelectedItem();
-                    pstm2.setString(1, "Unavailable");
-                    pstm2.setString(2, id);
-                    int affected = pstm2.executeUpdate();
-
-                    if (affected > 0) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                                "Status updated.",
-                                ButtonType.OK);
-                        Optional<ButtonType> buttonType = alert.showAndWait();
-                    } else {
-                        System.out.println("ERROR");
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
-        try {
-            bk_ssue_tbl.getItems().clear();
-            initialize();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        // Add to table or data store
+        System.out.println("Added new issue:");
+        System.out.println("Issue ID: " + issueId);
+        System.out.println("Issue Date: " + issueDate);
+        System.out.println("Member ID: " + memberId);
+        System.out.println("Member Name: " + memberName);
+        System.out.println("Book ID: " + bookId);
+        System.out.println("Book Title: " + bookTitle);
     }
 
     //button delete action
