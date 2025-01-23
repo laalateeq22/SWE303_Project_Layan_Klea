@@ -1,12 +1,8 @@
 package Controller;
 
 import Model.MemberTM;
-import db.DB;
 import db.DBConnection;
 import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,14 +21,10 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Optional;
 
 public class MemberFormController {
-
     public TextField mem_id;
     public TextField mem_nme;
     public TextField mem_addss;
@@ -43,210 +35,179 @@ public class MemberFormController {
     public Button btn_new;
     public Button btn_add;
 
-    //JDBC
     private Connection connection;
-    private PreparedStatement selectall;
-    private PreparedStatement newIdQuery;
-    private PreparedStatement addToTable;
-    private PreparedStatement updateQuarary;
-    private PreparedStatement deleteQuarary;
-    private PreparedStatement slectmemID;
 
-    public void initialize() throws ClassNotFoundException {
-        //disable id field
+    public void initialize() {
         mem_id.setDisable(true);
-        Class.forName("com.mysql.jdbc.Driver");
 
-        //set colman
         mem_tbl.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
         mem_tbl.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("name"));
         mem_tbl.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("address"));
         mem_tbl.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("contact"));
 
+        loadAllMembers();
+
+        mem_tbl.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                mem_id.setText(String.valueOf(newValue.getId()));
+                mem_nme.setText(newValue.getName());
+                mem_addss.setText(newValue.getAddress());
+                mem_num.setText(newValue.getContact());
+                btn_add.setText("Update");
+                mem_id.setDisable(true);
+            }
+        });
+    }
+
+    private void loadAllMembers() {
+        ObservableList<MemberTM> members = FXCollections.observableArrayList();
         try {
             connection = DBConnection.getInstance().getConnection();
-            ObservableList<MemberTM> members = mem_tbl.getItems();
-            selectall = connection.prepareStatement("SELECT * from memberdetail");
-            slectmemID = connection.prepareStatement("select * from memberdetail where id=?");
-            newIdQuery = connection.prepareStatement("SELECT id FROM memberdetail");
-            addToTable = connection.prepareStatement("INSERT INTO memberdetail values(?,?,?,?)");
-            updateQuarary = connection.prepareStatement("UPDATE memberdetail SET name=? , address=? , contact=? where id=?");
-            ResultSet rst = selectall.executeQuery();
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM memberdetail");
+            ResultSet rst = stm.executeQuery();
             while (rst.next()) {
-                System.out.println("load");
                 members.add(new MemberTM(
-                        rst.getString(1),
+                        rst.getInt(1),
                         rst.getString(2),
                         rst.getString(3),
                         rst.getString(4)
                 ));
             }
-            mem_tbl.setItems(members);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        mem_tbl.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<MemberTM>() {
-            @Override
-            public void changed(ObservableValue<? extends MemberTM> observable, MemberTM oldValue, MemberTM newValue) {
-                MemberTM selectedItem = mem_tbl.getSelectionModel().getSelectedItem();
-                try {
-                    connection = null;
-                    try {
-                        slectmemID.setString(1, selectedItem.getId());
-                        ResultSet rst = slectmemID.executeQuery();
-                        if (rst.next()) {
-                            mem_id.setText(rst.getString(1));
-                            mem_nme.setText(rst.getString(2));
-                            mem_addss.setText(rst.getString(3));
-                            mem_num.setText(rst.getString(4));
-                            mem_id.setDisable(true);
-                            btn_add.setText("Update");
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                } catch (NullPointerException n) {
-                    return;
-                }
-            }
-        });
+        mem_tbl.setItems(members);
     }
 
-    //button new action
-    public void btn_new(ActionEvent actionEvent) throws SQLException {
-        //txt_valid.setText("");
+    private int generateNewId() {
+        try {
+            connection = DBConnection.getInstance().getConnection();
+            PreparedStatement stm = connection.prepareStatement("SELECT MAX(id) FROM memberdetail");
+            ResultSet rst = stm.executeQuery();
+            if (rst.next()) {
+                return rst.getInt(1) + 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1; // Default ID if the table is empty
+    }
+
+    public void btn_new(ActionEvent actionEvent) {
+        mem_id.setDisable(false);
+        mem_id.clear();
         mem_nme.clear();
         mem_addss.clear();
         mem_num.clear();
         btn_add.setText("Add");
-        mem_id.setDisable(false);
-
-        ResultSet rst = newIdQuery.executeQuery();
-
-        String ids = null;
-        int maxId = 0;
-
-        while (rst.next()) {
-            ids = rst.getString(1);
-
-            int id = Integer.parseInt(ids.replace("M", ""));
-            if (id > maxId) {
-                maxId = id;
-            }
-        }
-        maxId = maxId + 1;
-        String id = "";
-        if (maxId < 10) {
-            id = "M00" + maxId;
-        } else if (maxId < 100) {
-            id = "M0" + maxId;
-        } else {
-            id = "M" + maxId;
-        }
-        mem_id.setText(id);
+        mem_id.setText(String.valueOf(generateNewId()));
     }
 
-    //button add action
-    public void btn_add(ActionEvent actionEvent) throws SQLException {
-        ObservableList<MemberTM> members = FXCollections.observableList(DB.members);
-        //is empty
-        if (mem_id.getText().isEmpty() ||
-                mem_nme.getText().isEmpty() ||
-                mem_addss.getText().isEmpty() ||
-                mem_num.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Please fill your details.",
-                    ButtonType.OK);
-            Optional<ButtonType> buttonType = alert.showAndWait();
-            return;
-        }
-        //reg-ex
-        if (!(mem_nme.getText().matches("^\\b([A-Za-z.]+\\s?)+$") && mem_addss.getText().matches("^\\b[A-Za-z0-9/,\\s]+.$") && mem_num.getText().matches("\\d{10}"))) {
-            new Alert(Alert.AlertType.ERROR, "Entered detail Invalid").show();
+    // Modify the btn_add to handle the result of insertMember and updateMember
+    public void btn_add(ActionEvent actionEvent) {
+        if (mem_id.getText().isEmpty() || mem_nme.getText().isEmpty() || mem_addss.getText().isEmpty() || mem_num.getText().isEmpty()) {
+            new Alert(Alert.AlertType.ERROR, "Please fill all fields.", ButtonType.OK).show();
             return;
         }
 
-        //save & update
-        if (btn_add.getText().equals("Add")) {
-            addToTable.setString(1, mem_id.getText());
-            addToTable.setString(2, mem_nme.getText());
-            addToTable.setString(3, mem_addss.getText());
-            addToTable.setString(4, mem_num.getText());
-            int affectedRows = addToTable.executeUpdate();
+        MemberTM member = new MemberTM(
+                Integer.parseInt(mem_id.getText()),
+                mem_nme.getText(),
+                mem_addss.getText(),
+                mem_num.getText()
+        );
 
-            if (affectedRows > 0) {
-                System.out.println("Data load successful");
-            } else {
-                System.out.println("Something went wrong");
-            }
+        boolean isSuccessful;
+        if ("Add".equals(btn_add.getText())) {
+            isSuccessful = insertMember(member);
         } else {
-            if (btn_add.getText().equals("Update")) {
-                for (int i = 0; i < members.size(); i++) {
-                    if (mem_id.getText().equals(members.get(i).getId())) {
-                        try {
-                            updateQuarary.setString(1, mem_nme.getText());
-                            updateQuarary.setString(2, mem_addss.getText());
-                            updateQuarary.setString(3, mem_num.getText());
-                            updateQuarary.setString(4, mem_id.getText());
-                            int affected = updateQuarary.executeUpdate();
+            isSuccessful = updateMember(member);
+        }
 
-                            if (affected > 0) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                                        "Record updated!!",
-                                        ButtonType.OK);
-                                Optional<ButtonType> buttonType = alert.showAndWait();
-                            } else {
-                                Alert alert = new Alert(Alert.AlertType.ERROR,
-                                        "Update error!",
-                                        ButtonType.OK);
-                                Optional<ButtonType> buttonType = alert.showAndWait();
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-            mem_tbl.setItems(members);
+        if (isSuccessful) {
+            loadAllMembers();
+            new Alert(Alert.AlertType.INFORMATION, "Operation Successful", ButtonType.OK).show();
+        } else {
+            new Alert(Alert.AlertType.ERROR, "Operation Failed", ButtonType.OK).show();
+        }
+    }
+
+    public boolean insertMember(MemberTM member) {
+        if(!validateInput(member)){
+            return false ;
         }
         try {
-            mem_tbl.getItems().clear();
-            initialize();
-        } catch (ClassNotFoundException e) {
+            connection = DBConnection.getInstance().getConnection();
+            PreparedStatement stm = connection.prepareStatement("INSERT INTO memberdetail VALUES (?, ?, ?, ?)");
+            stm.setInt(1, member.getId());
+            stm.setString(2, member.getName());
+            stm.setString(3, member.getAddress());
+            stm.setString(4, member.getContact());
+            int rowsAffected = stm.executeUpdate();
+            return rowsAffected > 0; // Return true if the insert was successful
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false; // Return false in case of an error
     }
 
-    //btn add delete
-    public void btn_dtl(ActionEvent actionEvent) throws SQLException {
-        MemberTM selectedItem = mem_tbl.getSelectionModel().getSelectedItem();
-        if (mem_tbl.getSelectionModel().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Please select a member.",
-                    ButtonType.OK);
-            Optional<ButtonType> buttonType = alert.showAndWait();
-            return;
-        } else {
-            deleteQuarary = connection.prepareStatement("DELETE from memberdetail where id=?");
-            deleteQuarary.setString(1, selectedItem.getId());
-
-            int affected = deleteQuarary.executeUpdate();
-            if (affected > 0) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                        "Record deleted!!",
-                        ButtonType.OK);
-                Optional<ButtonType> buttonType = alert.showAndWait();
-            }
+    // Modify the updateMember method to return a boolean
+    public boolean updateMember(MemberTM member) {
+        if(!validateInput(member)){
+            return false;
         }
         try {
-            mem_tbl.getItems().clear();
-            initialize();
-        } catch (ClassNotFoundException e) {
+            connection = DBConnection.getInstance().getConnection();
+            PreparedStatement stm = connection.prepareStatement("UPDATE memberdetail SET name=?, address=?, contact=? WHERE id=?");
+            stm.setString(1, member.getName());
+            stm.setString(2, member.getAddress());
+            stm.setString(3, member.getContact());
+            stm.setInt(4, member.getId());
+            int rowsAffected = stm.executeUpdate();
+            return rowsAffected > 0; // Return true if the update was successful
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false; // Return false in case of an error
     }
 
+    // Modify the btn_dtl to handle the result of deleteMember
+    public void btn_dtl(ActionEvent actionEvent) {
+        MemberTM selectedMember = mem_tbl.getSelectionModel().getSelectedItem();
+        if (selectedMember == null) {
+            new Alert(Alert.AlertType.ERROR, "Please select a member.", ButtonType.OK).show();
+            return;
+        }
+
+        boolean isDeleted = deleteMember(selectedMember.getId());
+        if (isDeleted) {
+            loadAllMembers();
+            new Alert(Alert.AlertType.INFORMATION, "Member Deleted Successfully", ButtonType.OK).show();
+        } else {
+            new Alert(Alert.AlertType.ERROR, "Failed to Delete Member", ButtonType.OK).show();
+        }
+    }
+    // Modify the deleteMember method to return a boolean
+    public boolean deleteMember(int id) {
+        try {
+            connection = DBConnection.getInstance().getConnection();
+            PreparedStatement stm = connection.prepareStatement("DELETE FROM memberdetail WHERE id=?");
+            stm.setInt(1, id);
+            int rowsAffected = stm.executeUpdate();
+            return rowsAffected > 0; // Return true if the deletion was successful
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false in case of an error
+    }
+
+    public void img_back(MouseEvent event) throws IOException {
+        URL resource = this.getClass().getResource("/View/HomeFormView.fxml");
+        Parent root = FXMLLoader.load(resource);
+        Scene scene = new Scene(root);
+        Stage primaryStage = (Stage) this.root.getScene().getWindow();
+        primaryStage.setScene(scene);
+    }
     public void playMouseEnterAnimation(MouseEvent event) {
         if (event.getSource() instanceof ImageView) {
             ImageView icon = (ImageView) event.getSource();
@@ -256,7 +217,7 @@ public class MemberFormController {
             scaleT.setToY(1.2);
             scaleT.play();
 
-            DropShadow glow = new DropShadow();
+            javafx.scene.effect.DropShadow glow = new DropShadow();
             glow.setColor(Color.YELLOW);
             glow.setWidth(20);
             glow.setHeight(20);
@@ -265,28 +226,29 @@ public class MemberFormController {
         }
     }
 
-    public void img_back(MouseEvent event) throws IOException {
-        URL resource = this.getClass().getResource("/View/HomeFormView.fxml");
-        Parent root = FXMLLoader.load(resource);
-        Scene scene = new Scene(root);
-        Stage primaryStage = (Stage) this.root.getScene().getWindow();
-        primaryStage.setScene(scene);
+    private boolean validateInput(MemberTM member) {
+        // Check if any required field (ID, Name, Address, Contact) is empty
+        if (member.getName().isEmpty() || member.getAddress().isEmpty() || member.getContact().isEmpty()) {
+            return false;
+        }
 
-        TranslateTransition tt = new TranslateTransition(Duration.millis(350), scene.getRoot());
-        tt.setFromX(-scene.getWidth());
-        tt.setToX(0);
-        tt.play();
+        // Validate that Name only contains letters and spaces
+        if (!member.getName().matches("^[A-Za-z\\s]+$")) {
+            return false;
+        }
+
+        // Validate that Address only contains letters, numbers, spaces, and common symbols (e.g., commas, hyphens)
+        if (!member.getAddress().matches("^[A-Za-z0-9\\s,.-]+$")) {
+            return false;
+        }
+
+        // Validate that Contact contains only digits and has a length of 10 characters (assuming it's a phone number)
+        if (!member.getContact().matches("^\\d{10}$")) {
+            return false;
+        }
+
+        // If all conditions are met, return true
+        return true;
     }
 
-    public void setAddToTable(PreparedStatement addToTable) {
-        this.addToTable = addToTable;
-    }
-
-    public void setUpdateQuarary(PreparedStatement updateQuarary) {
-        this.updateQuarary = updateQuarary;
-    }
-
-    public void showAlert(Alert alert) {
-        alert.show();
-    }
 }

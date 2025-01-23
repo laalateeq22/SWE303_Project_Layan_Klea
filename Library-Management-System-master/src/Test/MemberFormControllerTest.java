@@ -1,180 +1,137 @@
-package Test;
-
 import Controller.MemberFormController;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import org.junit.jupiter.api.*;
-import org.mockito.MockitoAnnotations;
+import Model.MemberTM;
 import db.DBConnection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.*;
-import java.util.concurrent.CountDownLatch;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MemberFormTest {
+class MemberFormControllerTest {
 
     private MemberFormController controller;
-    private Connection connection;
-
-    @BeforeAll
-    static void initToolkit() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.startup(() -> latch.countDown());
-        latch.await();
-    }
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() throws SQLException {
+        // Initialize the controller
         controller = new MemberFormController();
-        MockitoAnnotations.openMocks(this);
-        connection = DBConnection.getInstance().getConnection();
 
-        controller.mem_id = new TextField();
-        controller.mem_nme = new TextField();
-        controller.mem_addss = new TextField();
-        controller.mem_num = new TextField();
-        controller.mem_tbl = new javafx.scene.control.TableView<>();
-        controller.root = new AnchorPane();
-        controller.btn_add = new javafx.scene.control.Button();
-        controller.btn_new = new javafx.scene.control.Button();
+        // Set up the database (in-memory for simplicity)
     }
 
-    @AfterEach
-    void tearDown() throws Exception {
-        if (connection != null) {
-            connection.close();
+
+    // Boundary value testing for adding multiple members
+    @Test
+    void testAddMultipleMembers() throws SQLException {
+        // Test adding a single member
+        MemberTM singleMember = new MemberTM(1, "John Doe", "123 Street", "1234567890");
+        assertTrue(controller.insertMember(singleMember), "Single member should be added successfully.");
+
+        // Test adding multiple members at once
+        for (int i = 2; i <= 10; i++) {
+            MemberTM member = new MemberTM(i, "Member", "Street " + i, "1234567890");
+            assertTrue(controller.insertMember(member), "Member " + i + " should be added successfully.");
+        }
+
+        // Test adding more than 10 members (Boundary test)
+        for (int i = 11; i <= 15; i++) {
+            MemberTM member = new MemberTM(i, "Member", "Street " + i, "1234567890");
+            assertTrue(controller.insertMember(member), "Member " + i + " should be added successfully.");
         }
     }
 
-    //test 1: when they are all missing
+    // Decision table testing for adding members
     @Test
-    void testEmptyFields() {
-        controller.mem_id.clear();
-        controller.mem_nme.clear();
-        controller.mem_addss.clear();
-        controller.mem_num.clear();
+    void testAddMembersWithDecisionTable() throws SQLException {
+        // Case 1: Empty fields (invalid)
+        MemberTM case1 = new MemberTM(0, "", "", "");
+        assertFalse(controller.insertMember(case1), "Case 1: Empty fields should result in failure.");
 
-        controller.btn_add.fire();
+        // Case 2: Valid ID, invalid name
+        MemberTM case2 = new MemberTM(1, "", "123 Street", "123456789");
+        assertFalse(controller.insertMember(case2), "Case 2: Empty name should result in failure.");
 
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill your details.", ButtonType.OK);
-        assertTrue(alert.isShowing(), "Validation error alert should show.");
+        // Case 3: Valid ID, invalid address
+        MemberTM case3 = new MemberTM(2, "John Doe", "", "123456789");
+        assertFalse(controller.insertMember(case3), "Case 3: Empty address should result in failure.");
+
+        // Case 4: Valid ID, invalid contact
+        MemberTM case4 = new MemberTM(3, "John Doe", "123 Street", "");
+        assertFalse(controller.insertMember(case4), "Case 4: Empty contact should result in failure.");
+
+        // Case 5: All fields valid (valid)
+        MemberTM case5 = new MemberTM(4, "John Doe", "123 Street", "1234567890");
+        assertTrue(controller.insertMember(case5), "Case 5: All fields filled should be valid.");
+
+        // Case 6: Invalid ID (should fail)
+        MemberTM case6 = new MemberTM(-1, "John Doe", "123 Street", "123456789");
+        assertFalse(controller.insertMember(case6), "Case 6: Invalid ID should result in failure.");
     }
 
-    //test case 2: for the missing name
+
+    // Testing the update functionality
     @Test
-    void testNameEmpty() {
-        controller.mem_id.setText("M001");
-        controller.mem_nme.clear();
-        controller.mem_addss.setText("olya");
-        controller.mem_num.setText("0114829930");
+    void testUpdateMember() throws SQLException {
+        // No change (Valid)
+        MemberTM member = new MemberTM(5, "John Doe", "123 Street", "1234567890");
+        controller.insertMember(member);
+        assertTrue(controller.updateMember(member), "No changes: Update should succeed.");
 
-        controller.btn_add.fire();
+        // Incorrect name (Invalid)
+        member.setName("Jane_Doe");
+        member.setAddress("456 Avenue");
+        member.setContact("9876504321");
+        assertFalse(controller.updateMember(member), "Name and address change should be valid.");
 
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill your details.", ButtonType.OK);
-        assertTrue(alert.isShowing(), "Validation error alert should show.");
+        // mpty name (Invalid)
+        member.setName("");
+        member.setAddress("456 Avenue");
+        member.setContact("9876504321");
+        assertFalse(controller.updateMember(member), "Name and address change should be valid.");
+
+
+        // Incorrect address (Invalid)
+        member.setName("Jane Doe");
+        member.setAddress("45/6 -Avenue");
+        member.setContact("9876504321");
+        assertFalse(controller.updateMember(member), "Name and address change should be valid.");
+
+        // Invalid contact (Invalid)
+        member.setAddress("456 Avenue");
+        member.setContact("abcd");
+        assertFalse(controller.updateMember(member), "Invalid contact format should fail.");
+
+        // Change contact to a valid format
+        member.setContact("9876543201");
+        assertTrue(controller.updateMember(member), "Valid contact should pass.");
+
+        //empty contact
+        member.setContact("");
+        assertFalse(controller.updateMember(member), "empty contact format should fail.");
+
+        //empty address
+        member.setContact("9876543201");
+        member.setAddress("");
+        assertFalse(controller.updateMember(member), "empty address format should fail.");
     }
 
-    //test 5: for invalid phone number
+    // Testing the delete functionality
     @Test
-    void testInvalidContact() {
-        controller.mem_id.setText("M001");
-        controller.mem_nme.setText("ruqia");
-        controller.mem_addss.setText("KSU");
-        controller.mem_num.setText("12345"); //invalid number
+    void testDeleteMember() throws SQLException {
+        // Insert a member first
+        MemberTM member = new MemberTM(6, "John Doe", "123 Street", "1234567890");
+        controller.insertMember(member);
 
-        controller.btn_add.fire();
+        // Test the delete function
+        assertTrue(controller.deleteMember(member.getId()), "Valid member ID should be successfully deleted.");
 
-
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill your details.", ButtonType.OK);
-        assertTrue(alert.isShowing(), "Validation error alert should show.");
-    }
-
-    //test 6: for valid input in add
-    @Test
-    void testValidFieldsAdd() throws SQLException {
-        controller.mem_id.setText("M001");
-        controller.mem_nme.setText("leen");
-        controller.mem_addss.setText("newyork");
-        controller.mem_num.setText("0538889345");
-
-        controller.btn_add.fire();
-
+        // Check if the member was deleted from the database
+        Connection connection = DBConnection.getInstance().getConnection();
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM memberdetail WHERE id = ?");
-        stmt.setString(1, "M001");
+        stmt.setInt(1, member.getId());
         ResultSet rs = stmt.executeQuery();
-        assertTrue(rs.next(), "New member should be added to the database.");
-        assertEquals("leen", rs.getString("name"), "Name should match.");
+
+        assertFalse(rs.next(), "Member should be deleted from the database.");
     }
-
-    //test 7: for Valid Input in update
-    @Test
-    void testValidUpdate() throws SQLException {
-        testValidFieldsAdd();
-
-        controller.mem_id.setText("M001");
-        controller.mem_nme.setText("rana");
-        controller.mem_addss.setText("canberra");
-        controller.mem_num.setText("0538889345");
-
-        controller.btn_add.fire();
-
-        PreparedStatement stmt = connection.prepareStatement("SELECT * FROM memberdetail WHERE id = ?");
-        stmt.setString(1, "M001");
-        ResultSet rs = stmt.executeQuery();
-        assertTrue(rs.next(), "Updated member should exist in the database.");
-        assertEquals("rana", rs.getString("name"), "Name should be updated.");
-        assertEquals("canberra", rs.getString("address"), "Address should be updated.");
-    }
-
-    @Test
-    void BVTNumber() throws SQLException{
-        //min:
-        String belowBoundaryNumber = "01234"; // Invalid: Too short
-        controller.mem_id.setText("M003");
-        controller.mem_nme.setText("Sara");
-        controller.mem_addss.setText("Jeddah");
-        controller.mem_num.setText(belowBoundaryNumber);
-        controller.btn_add.fire();
-        Alert belowBoundaryAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
-        assertTrue(belowBoundaryAlert.isShowing(), "Phone number below boundary should show an error alert");
-
-        //max:
-        String maxNumber = "012345678901";
-        controller.mem_id.setText("M004");
-        controller.mem_nme.setText("Omar");
-        controller.mem_addss.setText("Dammam");
-        controller.mem_num.setText(maxNumber);
-        controller.btn_add.fire();
-        Alert aboveBoundaryAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
-        assertTrue(aboveBoundaryAlert.isShowing(), "Phone number above boundary should show an error alert");
-
-    }
-
-    @Test
-    void BVTID() throws SQLException {
-        //min:
-        String minID = "M";
-        controller.mem_id.setText(minID);
-        controller.mem_nme.setText("Noor");
-        controller.mem_addss.setText("Taif");
-        controller.mem_num.setText("0538641613");
-        controller.btn_add.fire();
-        Alert belowBoundaryIdAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
-        assertTrue(belowBoundaryIdAlert.isShowing(), "ID below boundary should show an error alert.");
-
-        //max:
-        String maxID = "M1234567890";
-        controller.mem_id.setText(maxID);
-        controller.mem_nme.setText("Yara");
-        controller.mem_addss.setText("Abha");
-        controller.mem_num.setText("0538641613");
-        controller.btn_add.fire();
-        Alert aboveBoundaryIdAlert = new Alert(Alert.AlertType.ERROR, "Entered detail Invalid", ButtonType.OK);
-        assertTrue(aboveBoundaryIdAlert.isShowing(), "ID above boundary should show an error alert.");
-    }
-
 }

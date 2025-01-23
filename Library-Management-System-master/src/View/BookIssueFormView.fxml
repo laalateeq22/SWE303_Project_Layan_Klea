@@ -15,7 +15,7 @@
             style="-fx-background-color: #ecf0f1;" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="Controller.BookIssueFormController">
     <children>
-        <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="25.0" onMouseClicked="#back_click"
+        <ImageView fx:id="img_back" fitHeight="40.0" fitWidth="40.0" layoutX="36.0" layoutY="25.0" onMouseClicked="#back_click"
                    onMouseExited="#playMouseEnterAnimation" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../Images/back.png"/>

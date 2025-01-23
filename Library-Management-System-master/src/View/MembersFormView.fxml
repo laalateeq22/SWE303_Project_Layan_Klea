@@ -38,8 +38,8 @@
                 prefWidth="86.0" style="-fx-background-color: #2ecc71;" text="+ New User"/>
         <Button fx:id="btn_add" layoutX="260.0" layoutY="296.0" onAction="#btn_add" prefHeight="25.0"
                 prefWidth="86.0" style="-fx-background-color: #f1c40f;" text="Add"/>
-        <Button layoutX="372.0" layoutY="296.0" onAction="#btn_dtl" prefHeight="25.0" prefWidth="86.0"
-                style="-fx-background-color: #e74c3c;" text="Delete" textAlignment="CENTER"/>
+        <Button fx:id="btn_dtl" layoutX="372.0" layoutY="296.0" onAction="#btn_dtl" prefHeight="25.0"
+                prefWidth="86.0" style="-fx-background-color: #e74c3c;" text="Delete" textAlignment="CENTER"/>
         <TableView fx:id="mem_tbl" layoutX="70.0" layoutY="335.0" prefHeight="234.0" prefWidth="479.0">
             <columns>
                 <TableColumn fx:id="mem_id_col" prefWidth="69.0" text="ID"/>
@@ -51,7 +51,7 @@
                 <InnerShadow/>
             </effect>
         </TableView>
-        <ImageView fx:id="img_bk" fitHeight="40.0" fitWidth="40.0" layoutX="50.0" layoutY="50.0"
+        <ImageView fx:id="img_back"  fitHeight="40.0" fitWidth="40.0" layoutX="50.0" layoutY="50.0"
                    onMouseClicked="#img_back" onMouseEntered="#playMouseEnterAnimation" pickOnBounds="true"
                    preserveRatio="true">
             <image>
