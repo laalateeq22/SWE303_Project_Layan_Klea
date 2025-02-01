@@ -30,27 +30,25 @@ class BookIssueSystemTest extends ApplicationTest {
 
     @Test
     public void testNavigateToBookIssueForm() {
-        // Step 1: Navigate to Book Issue Form
-        clickOn("#issue");  // Click on the "issue" ImageView to navigate to the Book Issue page
 
-        // Step 2: Wait for the page to load and verify elements are present
+        clickOn("#issue"); 
+
         WaitForAsyncUtils.waitForFxEvents();
-        verifyThat("#bk_ssue_tbl", isVisible());  // Check if the TableView is visible
+        verifyThat("#bk_ssue_tbl", isVisible());  
     }
 
     @Test
     public void testSearchIssueFunctionality() {
-        // Step 1: Navigate to Book Issue Form
-        clickOn("#issue");  // Click on the "issue" ImageView to navigate to the Book Issue page
 
-        // Step 2: Wait for the page to load
+        clickOn("#issue");  
+
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Step 3: Perform the search action in the Book Issue form
-        write("SS12345");  // Simulate typing the issue ID into the search box (assuming issue IDs are like SS12345)
-        press(KeyCode.ENTER);  // Simulate pressing Enter to trigger the search
+        write("SS12345"); 
+        
+        press(KeyCode.ENTER);  
 
-        // Step 4: Assert that the search results in the table are updated
+
         TableView<BookIssueTM> tableView = lookup("#bk_ssue_tbl").queryAs(TableView.class);
         assertNotNull(tableView, "TableView should not be null.");
         assertTrue(tableView.getItems().isEmpty(), "TableView should display issues after searching.");
@@ -58,24 +56,19 @@ class BookIssueSystemTest extends ApplicationTest {
 
     @Test
     public void testDeleteIssue() {
-        // Step 1: Navigate to Book Issue Form
-        clickOn("#issue");  // Click on the "issue" ImageView to navigate to the Book Issue page
 
-        // Step 2: Wait for the page to load
+        clickOn("#issue");  
+
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Step 3: Select an issue in the TableView
         TableView<BookIssueTM> tableView = lookup("#bk_ssue_tbl").queryAs(TableView.class);
         assertNotNull(tableView, "TableView should not be null.");
-        tableView.getSelectionModel().selectFirst();  // Select the first record in the table
+        tableView.getSelectionModel().selectFirst();  
 
-        // Step 4: Delete the selected issue
-        clickOn("#btnDelete");  // Click on the "Delete" button
+        clickOn("#btnDelete");  
 
-        // Step 5: Wait for the UI to update and check if the issue is removed
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Step 6: Assert that the issue has been deleted (check the table for the new item count)
         int tableSizeAfterDelete = tableView.getItems().size();
         assertEquals(0, tableSizeAfterDelete, "TableView should have one less item after deleting a record.");
     }
