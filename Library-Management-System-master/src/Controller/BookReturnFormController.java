@@ -6,8 +6,10 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,187 +31,144 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class BookReturnFormController {
+
+    // UI Components
     public AnchorPane Returnroot;
     public TextField txt_issu_date;
     public TextField txt_fine;
     public DatePicker txt_rt_date;
     public TableView<BookReturnTM> rt_tbl;
-    public ComboBox cmb_issue_id;
-    private Connection connection;
+    public ComboBox<String> cmb_issue_id;
 
-    public static float calculateFine(LocalDate issuedDate, LocalDate returnedDate) {
-        if (issuedDate == null || returnedDate == null) {
-            throw new IllegalArgumentException("Issued and returned dates cannot be null");
+    // Database Connection
+    public Connection connection;
+
+    /**
+     * Section: Initialization
+     */
+    public void initialize() {
+        initializeDatabaseConnection(); // Initialize database connection first
+
+        TableColumn<BookReturnTM, String> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<BookReturnTM, String> issuedDateColumn = new TableColumn<>("Issued Date");
+        issuedDateColumn.setCellValueFactory(new PropertyValueFactory<>("issuedDate"));
+
+        TableColumn<BookReturnTM, String> returnedDateColumn = new TableColumn<>("Returned Date");
+        returnedDateColumn.setCellValueFactory(new PropertyValueFactory<>("returnedDate"));
+
+        TableColumn<BookReturnTM, Float> fineColumn = new TableColumn<>("Fine");
+        fineColumn.setCellValueFactory(new PropertyValueFactory<>("fine"));
+
+        rt_tbl.getColumns().addAll(idColumn, issuedDateColumn, returnedDateColumn, fineColumn);
+
+        try {
+            loadInitialData();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        // Calculate days between issued and returned date
-        long daysDifference = java.time.temporal.ChronoUnit.DAYS.between(issuedDate, returnedDate);
-
-        // Grace period includes up to the 14th day (inclusive)
-        if (daysDifference <= 14) {
-            return 0;
-        }
-
-        // Fine starts on the 15th day
-        long overdueDays = daysDifference - 14;
-        return overdueDays * 15;
     }
 
 
-
-    public void initialize() throws ClassNotFoundException {
-        Class.forName("com.mysql.jdbc.Driver");
-
-        rt_tbl.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
-        rt_tbl.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("issuedDate"));
-        rt_tbl.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("returnedDate"));
-        rt_tbl.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("fine"));
-
+    public void initializeDatabaseConnection() {
         try {
             connection = DBConnection.getInstance().getConnection();
-            ObservableList<BookReturnTM> returns = rt_tbl.getItems();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize database connection");
+        }
+    }
 
-            String sql = "SELECT * from returndetail";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            ResultSet rst = pstm.executeQuery();
-            while (rst.next()) {
-                float fine = Float.parseFloat(rst.getString(4));
-                returns.add(new BookReturnTM(rst.getString(1), rst.getString(2), rst.getString(3), fine));
+
+    public void loadInitialData() {
+        try {
+            ObservableList<BookReturnTM> returnList = FXCollections.observableArrayList();
+
+            // Load return details
+            String sql = "SELECT * FROM returndetail";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                float fine = rs.getFloat(4);
+                returnList.add(new BookReturnTM(rs.getString(1), rs.getString(2), rs.getString(3), fine));
             }
-            rt_tbl.setItems(returns);
+            rt_tbl.setItems(returnList);
 
+            // Load issue IDs
             cmb_issue_id.getItems().clear();
-            ObservableList cmbIssue = cmb_issue_id.getItems();
-            String sql2 = "select issueId from issuetb";
-            PreparedStatement pstm1 = connection.prepareStatement(sql2);
-            ResultSet rst1 = pstm1.executeQuery();
+            populateComboBox(cmb_issue_id, "SELECT issueId FROM issuetb");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-            while (rst1.next()) {
-                cmbIssue.add(rst1.getString(1));
+    private void populateComboBox(ComboBox<String> comboBox, String query) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                comboBox.getItems().add(rs.getString(1));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
 
-        cmb_issue_id.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (cmb_issue_id.getSelectionModel().getSelectedItem() == null) {
-                    return;
-                }
+    public void setupListeners() {
+        // Issue ID ComboBox Listener
+        cmb_issue_id.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
                 try {
-                    String sql = "select date from issuetb where issueId =?";
-                    PreparedStatement pstm = connection.prepareStatement(sql);
-                    pstm.setString(1, (String) cmb_issue_id.getSelectionModel().getSelectedItem());
-                    ResultSet rst = pstm.executeQuery();
-                    if (rst.next()) {
-                        txt_issu_date.setText(rst.getString(1));
-                    }
+                    txt_issu_date.setText(getIssueDate(newValue));
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
         });
-        txt_rt_date.valueProperty().addListener(new ChangeListener<LocalDate>() {
-            @Override
-            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
 
-                if (txt_rt_date.getValue() == null) {
-                    return;
-                }
-
-                LocalDate returned = txt_rt_date.getValue();
-                LocalDate issued = LocalDate.parse(txt_issu_date.getText());
-
-                Date date1 = Date.valueOf(issued);
-                Date date2 = Date.valueOf(returned);
-
-                long diff = date2.getTime() - date1.getTime();
-
-                System.out.println(TimeUnit.MILLISECONDS.toDays(diff));
-                int dateCount = (int) TimeUnit.MILLISECONDS.toDays(diff);
-                float fine = 0;
-
-                if (dateCount > 14) {
-                    fine = dateCount * 15;
-                }
-                txt_fine.setText(Float.toString(fine));
+        // Return DatePicker Listener
+        txt_rt_date.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !txt_issu_date.getText().isEmpty()) {
+                LocalDate issuedDate = LocalDate.parse(txt_issu_date.getText());
+                float fine = calculateFine(issuedDate, newValue);
+                txt_fine.setText(String.format("%.2f", fine));
             }
         });
     }
 
-    //btn new action
+    /**
+     * Section: Event Handlers
+     */
     public void btn_new(ActionEvent actionEvent) {
-        txt_fine.clear();
-        txt_issu_date.setPromptText("Issue date");
-        cmb_issue_id.getSelectionModel().clearSelection();
-        txt_rt_date.setPromptText("Returned date");
+        clearForm();
     }
 
-    //btn add action
-    public void btn_add_inveb(ActionEvent actionEvent) throws SQLException {
-        if (cmb_issue_id.getSelectionModel().isEmpty() ||
-                txt_issu_date.getText().isEmpty() ||
-                txt_rt_date.getValue() == null ||
-                txt_fine.getText().isEmpty()
-        ) {
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Please fill details.",
-                    ButtonType.OK);
-            Optional<ButtonType> buttonType = alert.showAndWait();
-            System.out.println("Fill Your empty fields!");
+    public void btn_add_inveb(ActionEvent actionEvent) {
+        if (cmb_issue_id.getSelectionModel().isEmpty() || txt_issu_date.getText().isEmpty()
+                || txt_rt_date.getValue() == null || txt_fine.getText().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Please fill all details.");
             return;
         }
 
-        String issueID = (String) cmb_issue_id.getSelectionModel().getSelectedItem();
-        String sql = "INSERT INTO returndetail VALUES (?,?,?,?)";
-        PreparedStatement pstm = connection.prepareStatement(sql);
-        pstm.setString(1, (String) cmb_issue_id.getSelectionModel().getSelectedItem());
-        pstm.setString(2, txt_issu_date.getText());
-        pstm.setString(3, txt_rt_date.getValue().toString());
-        pstm.setString(4, txt_fine.getText());
-        int affectedRows = pstm.executeUpdate();
+        String issueId = cmb_issue_id.getSelectionModel().getSelectedItem();
+        String issuedDate = txt_issu_date.getText();
+        String returnedDate = txt_rt_date.getValue().toString();
+        float fine = Float.parseFloat(txt_fine.getText());
 
-        if (affectedRows > 0) {
-            System.out.println("successful");
-            String sql4 = "Update bookdetail SET states=? where id=?";
-            PreparedStatement pstm2 = connection.prepareStatement(sql4);
+        boolean isSuccess = addReturnRecord(issueId, issuedDate, returnedDate, fine);
 
-            String sql3 = "select bookId from issuetb where issueId=?";
-            PreparedStatement pstm3 = connection.prepareStatement(sql3);
-            pstm3.setString(1, (String) cmb_issue_id.getSelectionModel().getSelectedItem());
-            ResultSet rst3 = pstm3.executeQuery();
-            String id = null;
-
-            if (rst3.next()) {
-                id = rst3.getString(1);
-            }
-            pstm2.setString(1, "Available");
-            pstm2.setString(2, id);
-            int affected = pstm2.executeUpdate();
-            if (affected > 0) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                        "Status updated.",
-                        ButtonType.OK);
-                Optional<ButtonType> buttonType = alert.showAndWait();
-            }
+        if (isSuccess) {
+            showAlert(Alert.AlertType.INFORMATION, "Return record added successfully!");
+            loadInitialData();
+            clearForm();
         } else {
-            System.out.println("Something went wrong");
+            showAlert(Alert.AlertType.ERROR, "Something went wrong. Please try again.");
         }
-        try {
-            rt_tbl.getItems().clear();
-            initialize();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        connection.close();
-        cmb_issue_id.getItems().remove(issueID);
-        cmb_issue_id.getSelectionModel().clearSelection();
-        txt_issu_date.clear();
-        txt_fine.clear();
-        txt_rt_date.getEditor().clear();
     }
 
+    @FXML
     public void img_back(MouseEvent event) throws IOException {
         URL resource = this.getClass().getResource("/View/HomeFormView.fxml");
         Parent root = FXMLLoader.load(resource);
@@ -223,6 +182,7 @@ public class BookReturnFormController {
         tt.play();
     }
 
+    @FXML
     public void playMouseEnterAnimation(MouseEvent event) {
         if (event.getSource() instanceof ImageView) {
             ImageView icon = (ImageView) event.getSource();
@@ -239,5 +199,78 @@ public class BookReturnFormController {
             glow.setRadius(20);
             icon.setEffect(glow);
         }
+    }
+
+    /**
+     * Section: Database Logic
+     */
+    public String getIssueDate(String issueId) throws SQLException {
+        String sql = "SELECT date FROM issuetb WHERE issueId = ?";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setString(1, issueId);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        return null;
+    }
+
+    public boolean addReturnRecord(String issueId, String issuedDate, String returnedDate, float fine) {
+        try {
+            // SQL query without 'id' field
+            String sql = "INSERT INTO returndetail (issueId, issuedDate, returnedDate, fine) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setString(1, issueId);
+            stmt.setString(2, issuedDate);
+            stmt.setString(3, returnedDate);
+            stmt.setFloat(4, fine);
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                updateBookStatus(issueId, "Available");
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void updateBookStatus(String issueId, String status) {
+        try {
+            String sql = "UPDATE bookdetail SET states = ? WHERE id = (SELECT bookId FROM issuetb WHERE issueId = ?)";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, status);
+            stmt.setString(2, issueId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Section: Utility Methods
+     */
+    public void clearForm() {
+        txt_issu_date.clear();
+        txt_fine.clear();
+        txt_rt_date.setValue(null);
+        cmb_issue_id.getSelectionModel().clearSelection();
+    }
+
+    public static float calculateFine(LocalDate issuedDate, LocalDate returnedDate) {
+        // Borrowing period: 14 days
+        LocalDate dueDate = issuedDate.plusDays(14);
+        long daysLate = java.time.temporal.ChronoUnit.DAYS.between(dueDate, returnedDate);
+        return daysLate > 0 ? daysLate * 15 : 0; // Fine is 15 per day for late returns
+    }
+
+
+
+
+    public void showAlert(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type, message, ButtonType.OK);
+        alert.showAndWait();
     }
 }

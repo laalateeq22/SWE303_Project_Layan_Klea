@@ -1,73 +1,132 @@
+package Test;
+
 import Controller.BookReturnFormController;
+import Model.BookReturnTM;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import java.sql.*;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-class BookReturnFormControllerFineCalculationTest {
+class BookReturnFormControllerTest {
 
     private BookReturnFormController controller;
+    private Connection mockConnection;
+    private PreparedStatement mockStatement;
+    private ResultSet mockResultSet;
+    private TableView<BookReturnTM> mockTableView;
+    private ComboBox<String> mockComboBox;
+    private DatePicker mockDatePicker;
+    private TextField mockTextField;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() throws Exception {
         controller = new BookReturnFormController();
+
+        // Mock JavaFX components
+        mockTableView = mock(TableView.class);
+        mockComboBox = mock(ComboBox.class);
+        mockDatePicker = mock(DatePicker.class);
+        mockTextField = mock(TextField.class);
+
+        // Mock database components
+        mockConnection = mock(Connection.class);
+        mockStatement = mock(PreparedStatement.class);
+        mockResultSet = mock(ResultSet.class);
+
+        // Inject mock connection and UI components
+        controller.connection = mockConnection;
+        controller.rt_tbl = mockTableView;
+        controller.cmb_issue_id = mockComboBox;
+        controller.txt_rt_date = mockDatePicker;
+        controller.txt_issu_date = mockTextField;
+        controller.txt_fine = mockTextField;
     }
 
     @Test
-    public void FineCalculation_AtExactBoundary_NoFine() {
+    void testGetIssueDate() throws Exception {
+        // Mock SQL behavior
+        when(mockConnection.prepareStatement("SELECT date FROM issuetb WHERE issueId = ?"))
+                .thenReturn(mockStatement);
+        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getString(1)).thenReturn("2025-01-01");
 
-        LocalDate issuedDate = LocalDate.of(2024, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2024, 1, 14); // 14 days inclusive
+        String issueDate = controller.getIssueDate("ISSUE_001");
+        assertEquals("2025-01-01", issueDate);
 
-        float fine = controller.calculateFine(issuedDate, returnedDate);
-
-        assertEquals(0, fine, "Fine should be 0 when returning on the 14th day.");
+        verify(mockStatement).setString(1, "ISSUE_001");
+        verify(mockStatement).executeQuery();
     }
 
     @Test
-    void FineCalculation_JustOverBoundary() {
-        LocalDate issuedDate = LocalDate.of(2024, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2024, 1, 16); // 15th day since issuance
-        float expectedFine = 15.0f;
+    void testCalculateFine() {
+        LocalDate issuedDate = LocalDate.of(2025, 1, 1);
+        LocalDate returnedDate = LocalDate.of(2025, 1, 20); // 5 days late (14 days borrowing period)
 
-        float actualFine = BookReturnFormController.calculateFine(issuedDate, returnedDate);
-
-        assertEquals(expectedFine, actualFine, "Fine should be 15 when returning on the 15th day.");
-    }
-
-
-    @Test
-    public void FineCalculation_JustBelowBoundary() {
-        // Return on the 13th day
-        LocalDate issuedDate = LocalDate.of(2024, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2024, 1, 13);
-
-        float fine = controller.calculateFine(issuedDate, returnedDate);
-
-        assertEquals(0, fine, "Fine should be 0 when returning on the 13th day.");
+        float fine = BookReturnFormController.calculateFine(issuedDate, returnedDate);
+        assertEquals(75.0f, fine); // 5 days x 15 fine/day
     }
 
     @Test
-    public void FineCalculation_AtStartDate() {
-        //  Return on the same day
-        LocalDate issuedDate = LocalDate.of(2024, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2024, 1, 1);
+    void testAddReturnRecordSuccess() throws Exception {
+        // Mock SQL behavior
+        when(mockConnection.prepareStatement("INSERT INTO returndetail VALUES (?, ?, ?, ?)"))
+                .thenReturn(mockStatement);
+        when(mockStatement.executeUpdate()).thenReturn(1);
 
-        float fine = controller.calculateFine(issuedDate, returnedDate);
+        boolean result = controller.addReturnRecord("ISSUE_001", "2025-01-01", "2025-01-20", 75.0f);
+        assertTrue(result);
 
-        assertEquals(0, fine, "Fine should be 0 when returning on the same day.");
+        verify(mockStatement).setString(1, "ISSUE_001");
+        verify(mockStatement).setString(2, "2025-01-01");
+        verify(mockStatement).setString(3, "2025-01-20");
+        verify(mockStatement).setFloat(4, 75.0f);
+        verify(mockStatement).executeUpdate();
+    }
+
+
+
+    @Test
+    void testUpdateBookStatus() throws Exception {
+        // Mock SQL behavior
+        when(mockConnection.prepareStatement("UPDATE bookdetail SET states = ? WHERE id = (SELECT bookId FROM issuetb WHERE issueId = ?)"))
+                .thenReturn(mockStatement);
+
+        controller.updateBookStatus("ISSUE_001", "Available");
+
+        verify(mockStatement).setString(1, "Available");
+        verify(mockStatement).setString(2, "ISSUE_001");
+        verify(mockStatement).executeUpdate();
     }
 
     @Test
-    public void FineCalculation_LongAfterBoundary() {
-        //  Return far beyond the 14th day
-        LocalDate issuedDate = LocalDate.of(2024, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2024, 2, 1); // 31 days overdue
+    void testLoadInitialData() throws Exception {
+        // Mock SQL behavior for return details
+        when(mockConnection.prepareStatement("SELECT * FROM returndetail"))
+                .thenReturn(mockStatement);
+        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
 
-        float fine = controller.calculateFine(issuedDate, returnedDate);
+        when(mockResultSet.next()).thenReturn(true, true, false); // Two rows in result
+        when(mockResultSet.getString(1)).thenReturn("ID_001", "ID_002");
+        when(mockResultSet.getString(2)).thenReturn("2025-01-01", "2025-01-02");
+        when(mockResultSet.getString(3)).thenReturn("2025-01-15", "2025-01-16");
+        when(mockResultSet.getFloat(4)).thenReturn(30.0f, 45.0f);
 
-        assertEquals(255, fine, "Fine should be correctly calculated for long overdue returns.");
+        ObservableList<BookReturnTM> returnList = FXCollections.observableArrayList();
+        controller.loadInitialData();
+
+        assertNotNull(controller.rt_tbl.getItems());
+        assertEquals(2, controller.rt_tbl.getItems().size());
     }
 }

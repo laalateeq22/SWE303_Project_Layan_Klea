@@ -9,17 +9,21 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+
+
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="Returnroot" maxHeight="-Infinity" maxWidth="-Infinity"
             minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0"
             style="-fx-background-color: #ecf0f1;" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="Controller.BookReturnFormController">
     <children>
-        <ImageView fx:id="img_back" fitHeight="40.0" fitWidth="40.0" layoutX="37.0" layoutY="25.0" onMouseClicked="#img_back"
-                   onMouseEntered="#playMouseEnterAnimation" pickOnBounds="true" preserveRatio="true">
+        <ImageView fx:id="img_back" fitHeight="40.0" fitWidth="40.0" layoutX="37.0" layoutY="25.0"
+                   onMouseClicked="#img_back" onMouseEntered="#playMouseEnterAnimation"
+                   pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../Images/back.png"/>
             </image>
         </ImageView>
+
         <ImageView fitHeight="82.0" fitWidth="87.0" layoutX="126.0" layoutY="45.0" pickOnBounds="true"
                    preserveRatio="true">
             <image>
@@ -39,10 +43,10 @@
                    promptText="Fine"/>
         <DatePicker fx:id="txt_rt_date" layoutX="141.0" layoutY="238.0" prefHeight="28.0" prefWidth="330.0"
                     promptText="Returned Date"/>
-        <Button layoutX="135.0" layoutY="336.0" onAction="#btn_new" prefHeight="25.0" prefWidth="131.0"
-                style="-fx-background-color: #f1c40f;" text="+New"/>
-        <Button layoutX="345.0" layoutY="336.0" onAction="#btn_add_inveb" prefHeight="25.0" prefWidth="131.0"
-                style="-fx-background-color: #2ecc71;" text="Add To Inventory"/>
+        <Button fx:id="btn_new" layoutX="135.0" layoutY="336.0" onAction="#btn_new" prefHeight="25.0" prefWidth="131.0"
+                style="-fx-background-color: #f1c40f;" text="New"/>
+        <Button fx:id="btn_add_inveb" layoutX="345.0" layoutY="336.0" onAction="#btn_add_inveb" prefHeight="25.0"
+                prefWidth="131.0" style="-fx-background-color: #2ecc71;" text="Add"/>
         <TableView fx:id="rt_tbl" layoutX="68.0" layoutY="378.0" prefHeight="200.0" prefWidth="465.0">
             <columns>
                 <TableColumn fx:id="iss_id_col" prefWidth="78.0" text="Issue ID"/>
