@@ -27,14 +27,14 @@ public class BookSearchFormUITest extends ApplicationTest {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/BookSearchFormView.fxml"));
         Parent root = loader.load();
-        controller = loader.getController(); // Make sure this is called
+        controller = loader.getController(); 
         stage.setScene(new Scene(root));
         stage.show();
     }
 
     @BeforeEach
     public void setup() {
-        // Seed test data
+
         try (Connection connection = controller.connection) {
             connection.createStatement().executeUpdate("DELETE FROM bookdetail WHERE id = 'B001'");
             connection.createStatement().executeUpdate("INSERT INTO bookdetail (id, title, author, status) VALUES ('B001', 'Test Book', 'Test Author', 'Available')");
@@ -61,7 +61,6 @@ public class BookSearchFormUITest extends ApplicationTest {
         // Wait for data to load
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Verify that the table contains the test data
         assertFalse(table.getItems().isEmpty(), "Table should not be empty.");
         assertTrue(table.getItems().stream().anyMatch(book -> book.getId().equals("B001")), "Table should contain the test book.");
     }
@@ -71,20 +70,18 @@ public class BookSearchFormUITest extends ApplicationTest {
         TextField searchField = lookup("#bk_sch").queryAs(TextField.class);
         TableView<BookTM> table = lookup("#tbl_bk").queryAs(TableView.class);
 
-        // Simulate typing in the search field
         interact(() -> searchField.setText("Test"));
 
         // Wait for search results to update
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Verify that the search results contain the test data
         assertFalse(table.getItems().isEmpty(), "Search results should not be empty.");
         assertTrue(table.getItems().stream().anyMatch(book -> book.getTitle().equals("Test Book")), "Search results should contain the test book.");
     }
 
     @Test
     public void testNavigationToHomePage() {
-        // Simulate clicking on the back button
+
         clickOn("#img_bk");
 
         // Wait for the UI thread to update
