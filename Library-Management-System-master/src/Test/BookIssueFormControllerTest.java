@@ -150,13 +150,13 @@ class BookIssueFormControllerTest {
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getString(1)).thenReturn("John Doe");
+        when(mockResultSet.getString(1)).thenReturn("Klea Faqolli");
 
         Platform.runLater(() -> {
             controller.mem_is_id.getItems().add("M001");
             controller.mem_is_id.getSelectionModel().select("M001");
 
-            assertEquals("John Doe", controller.txt_name.getText(), "Member name should be updated");
+            assertEquals("Klea Faqolli", controller.txt_name.getText(), "Member name should be updated");
         });
     }
 
@@ -177,17 +177,17 @@ class BookIssueFormControllerTest {
     }
     @Test
     void testDeleteActionWithNoSelectedItem() {
-        // Simulate no item selected in the table
+
         controller.bk_ssue_tbl.getSelectionModel().clearSelection();
 
-        // Use an ArgumentCaptor to capture any potential interactions with the mockStatement
+
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
 
         Platform.runLater(() -> {
             try {
                 controller.delete_Action(new ActionEvent());
 
-                // Verify that no interaction with mockStatement occurs when no item is selected
+
                 verify(mockStatement, never()).setString(Integer.parseInt(anyString()), argumentCaptor.capture());
                 verify(mockStatement, never()).executeUpdate();
             } catch (SQLException e) {
@@ -226,7 +226,7 @@ class BookIssueFormControllerTest {
     @Test
     void testMemberIdSelectionHandlesInvalidId() throws SQLException {
         // Simulate a case where no member exists with the given ID
-        when(mockResultSet.next()).thenReturn(false);  // No result found for member ID
+        when(mockResultSet.next()).thenReturn(false); 
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
 
         Platform.runLater(() -> {
@@ -240,7 +240,7 @@ class BookIssueFormControllerTest {
     @Test
     void testBookIdSelectionHandlesInvalidId() throws SQLException {
         // Simulate a case where no book exists with the given ID
-        when(mockResultSet.next()).thenReturn(false);  // No result found for book ID
+        when(mockResultSet.next()).thenReturn(false);
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
 
         Platform.runLater(() -> {
@@ -255,7 +255,7 @@ class BookIssueFormControllerTest {
     void testBookIdSelectionWhenBookUnavailable() throws SQLException {
         // Simulate a scenario where the selected book is not available
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getString(2)).thenReturn("Not Available"); // Book status is not available
+        when(mockResultSet.getString(2)).thenReturn("Not Available"); 
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
 
         Platform.runLater(() -> {
@@ -291,7 +291,7 @@ class BookIssueFormControllerTest {
 
     @Test
     void testValidMemberAndBookIdShouldPopulateFields() throws SQLException {
-        when(mockResultSet.getString(1)).thenReturn("John Doe");
+        when(mockResultSet.getString(1)).thenReturn("Klea Faqolli");
         when(mockResultSet.getString(2)).thenReturn("Java Programming");
 
         Platform.runLater(() -> {
@@ -302,7 +302,7 @@ class BookIssueFormControllerTest {
             controller.mem_is_id.getSelectionModel().select("M001");
             controller.book_id.getSelectionModel().select("B001");
 
-            assertEquals("John Doe", controller.txt_name.getText(), "Member name should be correctly displayed");
+            assertEquals("Klea Faqolli ", controller.txt_name.getText(), "Member name should be correctly displayed");
             assertEquals("Java Programming", controller.txt_title.getText(), "Book title should be correctly displayed");
         });
     }
@@ -315,11 +315,10 @@ class BookIssueFormControllerTest {
             controller.mem_is_id.setValue(null);
             controller.book_id.setValue(null);
 
-            controller.add_action(new ActionEvent());  // Should not trigger any database interaction
+            controller.add_action(new ActionEvent());  
             verifyNoInteractions(mockStatement, "No database interaction should occur when fields are empty");
         });
     }
 
 
 }
-
