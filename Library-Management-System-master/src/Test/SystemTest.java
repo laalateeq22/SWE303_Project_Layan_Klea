@@ -27,10 +27,9 @@ public class SystemTest extends ApplicationTest {
 
     @Test
     public void testBookSearchAndReturnToMainPage() {
-        // Step 1: Navigate to Book Search
+
         clickOn("#bk_search"); // Assuming the ID of the ImageView is bk_search
 
-        // Step 2: Verify BookSearchForm loaded
         TextField searchField = lookup("#bk_sch").queryAs(TextField.class);
         assertNotNull(searchField, "Search field should be present in the BookSearchForm.");
 
@@ -39,18 +38,16 @@ public class SystemTest extends ApplicationTest {
 
         // Step 3: Perform a book search using write for typing simulation
         write("B001"); // Simulate typing "Test Book" character by character
-        press(javafx.scene.input.KeyCode.ENTER); // Simulate pressing the "Enter" key
+        press(javafx.scene.input.KeyCode.ENTER); 
 
-        // Step 4: Verify results in the TableView
         assertTrue(
                 tableView.getItems().stream().anyMatch(item -> item.toString().contains("Test Book")),
                 "The search results should contain books matching 'Test Book'."
         );
 
-        // Step 5: Navigate back to the main page
         clickOn("#img_bk"); // Assuming the back button has ID img_back
 
-        // Step 6: Verify HomeForm is displayed
+
         ImageView homeMemberIcon = lookup("#member").queryAs(ImageView.class);
         assertNotNull(homeMemberIcon, "Member icon should be present on the HomeForm.");
     }
