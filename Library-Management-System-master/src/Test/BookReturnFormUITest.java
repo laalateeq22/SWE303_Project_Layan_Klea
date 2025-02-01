@@ -63,10 +63,8 @@ public class BookReturnFormUITest extends ApplicationTest {
             txtFine.setText("45.0");
         });
 
-        // Trigger clear button
         clickOn("#btn_new");
 
-        // Verify form is cleared
         assertTrue(cmbIssueId.getSelectionModel().isEmpty(), "ComboBox should be empty after clearing.");
         assertEquals("", txtIssueDate.getText(), "Issue date should be cleared.");
         assertNull(txtReturnDate.getValue(), "Return date should be cleared.");
@@ -76,10 +74,8 @@ public class BookReturnFormUITest extends ApplicationTest {
 
     @Test
     public void testValidationForEmptyFields() {
-        // Leave fields empty and click Add
         clickOn("#btn_add_inveb");
 
-        // Verify alert is shown
         assertTrue(lookup(".alert").tryQuery().isPresent(), "Alert should be shown for empty fields.");
     }
 
@@ -102,10 +98,8 @@ public class BookReturnFormUITest extends ApplicationTest {
             }
         });
 
-        // Reload data in the controller
         interact(() -> controller.loadInitialData());
 
-        // Assert that the combo box is populated
         assertTrue(cmbIssueId.getItems().isEmpty(), "ComboBox should be populated with issue IDs.");
         assertFalse(cmbIssueId.getItems().contains("ISS001"), "ComboBox should contain the seeded issue ID.");
     }
@@ -115,7 +109,6 @@ public class BookReturnFormUITest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents(); // Wait for UI thread updates
         clickOn("#img_back");
 
-        // Wait for the HomeRoot to appear
         WaitForAsyncUtils.waitForFxEvents();
 
         // Verify navigation to the home page
@@ -136,14 +129,13 @@ public class BookReturnFormUITest extends ApplicationTest {
         controller.txt_rt_date.setValue(java.time.LocalDate.of(2025, 1, 20));
         controller.txt_fine.setText("75.00");
 
-        // Simulate adding return record
         assertDoesNotThrow(() -> controller.btn_add_inveb(null));
     }
 
     @Test
     void testCalculateFine() {
         float fine = controller.calculateFine(java.time.LocalDate.of(2025, 1, 1), java.time.LocalDate.of(2025, 1, 20));
-        assertEquals(75.0f, fine); // 5 days x 15 fine/day
+        assertEquals(75.0f, fine); 
     }
 
 }
