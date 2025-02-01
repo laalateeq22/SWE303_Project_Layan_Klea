@@ -72,7 +72,7 @@ class BookReturnFormControllerTest {
     @Test
     void testCalculateFine() {
         LocalDate issuedDate = LocalDate.of(2025, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2025, 1, 20); // 5 days late (14 days borrowing period)
+        LocalDate returnedDate = LocalDate.of(2025, 1, 20); 
 
         float fine = BookReturnFormController.calculateFine(issuedDate, returnedDate);
         assertEquals(75.0f, fine); // 5 days x 15 fine/day
@@ -117,7 +117,7 @@ class BookReturnFormControllerTest {
                 .thenReturn(mockStatement);
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
 
-        when(mockResultSet.next()).thenReturn(true, true, false); // Two rows in result
+        when(mockResultSet.next()).thenReturn(true, true, false); 
         when(mockResultSet.getString(1)).thenReturn("ID_001", "ID_002");
         when(mockResultSet.getString(2)).thenReturn("2025-01-01", "2025-01-02");
         when(mockResultSet.getString(3)).thenReturn("2025-01-15", "2025-01-16");
