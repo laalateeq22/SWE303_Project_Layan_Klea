@@ -54,6 +54,7 @@ class BookReturnFormControllerTest1 {
             controller.txt_fine = new TextField();
         });
     }
+    
     @AfterEach
     public void tearDown() {
         // Close the connection after the test
@@ -84,7 +85,7 @@ class BookReturnFormControllerTest1 {
     @Test
     void testCalculateFine() {
         LocalDate issuedDate = LocalDate.of(2025, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2025, 1, 20); // 5 days late (14-day borrowing period)
+        LocalDate returnedDate = LocalDate.of(2025, 1, 20); 
 
         float fine = BookReturnFormController.calculateFine(issuedDate, returnedDate);
         assertEquals(75.0f, fine); // 5 days x 15 fine/day
@@ -98,10 +99,8 @@ class BookReturnFormControllerTest1 {
             controller.initializeDatabaseConnection();
             Connection connection = controller.connection;
 
-            // Assert connection is not null
             assertNotNull(connection, "Database connection should not be null.");
 
-            // Assert connection is valid
             assertTrue(connection.isValid(2), "Database connection should be valid.");
         } catch (Exception e) {
             fail("Exception occurred during database connection initialization: " + e.getMessage());
@@ -122,8 +121,8 @@ class BookReturnFormControllerTest1 {
     @Test
     void testCalculateFine_LateReturn() {
         LocalDate issuedDate = LocalDate.of(2025, 1, 1);
-        LocalDate returnedDate = LocalDate.of(2025, 1, 20); // 5 days late (14 days borrowing period)
-
+        LocalDate returnedDate = LocalDate.of(2025, 1, 20); 
+        
         float fine = BookReturnFormController.calculateFine(issuedDate, returnedDate);
         assertEquals(75.0f, fine, "The fine should be 75 for 5 days of late return");
     }
@@ -143,6 +142,7 @@ class BookReturnFormControllerTest1 {
         verify(mockStatement).executeUpdate();
     }
 
+
     @Test
     void testAddReturnRecord_Failure() throws SQLException {
         // Mock SQL behavior for insert operation that fails
@@ -154,6 +154,7 @@ class BookReturnFormControllerTest1 {
 
         verify(mockStatement).executeUpdate();
     }
+    
     @Test
     void testUpdateBookStatus() throws SQLException {
         // Mock SQL behavior for book status update
@@ -161,7 +162,7 @@ class BookReturnFormControllerTest1 {
 
         controller.updateBookStatus("ISSUE_001", "Available");
 
-        // Verify that the SQL query was executed with correct parameters
+
         verify(mockStatement).setString(1, "Available");
         verify(mockStatement).setString(2, "ISSUE_001");
         verify(mockStatement).executeUpdate();
