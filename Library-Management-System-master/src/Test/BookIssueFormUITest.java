@@ -55,7 +55,7 @@ public class BookIssueFormUITest extends ApplicationTest {
     @Test
     public void testMemberSelectionUpdatesNameField() {
         // Simulate member selection
-        clickOn("#mem_is_id").type(KeyCode.DOWN).type(KeyCode.ENTER); // Select member
+        clickOn("#mem_is_id").type(KeyCode.DOWN).type(KeyCode.ENTER); 
 
         // Ensure that the name field is updated correctly
         String memberName = controller.txt_name.getText();
@@ -75,7 +75,7 @@ public class BookIssueFormUITest extends ApplicationTest {
     @Test
     public void testInvalidMemberIdSelection() {
         // Simulate an invalid member selection (e.g., no member exists)
-        clickOn("#mem_is_id").type(KeyCode.DOWN).type(KeyCode.ENTER); // Select an invalid member
+        clickOn("#mem_is_id").type(KeyCode.DOWN).type(KeyCode.ENTER); 
 
         // Ensure that the name field is not updated
         String memberName = controller.txt_name.getText();
@@ -102,7 +102,7 @@ public class BookIssueFormUITest extends ApplicationTest {
         clickOn("#book_id").type(KeyCode.DOWN).type(KeyCode.ENTER); // Select book
         clickOn("#txt_isu_date").write("2025-01-23"); // Enter issue date
 
-        clickOn("#btnAdd"); // Add entry
+        clickOn("#btnAdd"); 
 
         TableView<?> tableView = lookup("#bk_ssue_tbl").query();
         assertNotNull(tableView.getItems().get(0), "TableView should have at least one row after adding");
