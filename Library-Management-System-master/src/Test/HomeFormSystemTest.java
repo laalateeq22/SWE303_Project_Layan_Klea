@@ -18,7 +18,13 @@ import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.service.query.PointQuery;
 import Test.Main;
 public class HomeFormSystemTest  extends ApplicationTest{
-
+    public void displayActiveThreads() {
+        System.out.println("\n=== Active Threads ===");
+        Thread.getAllStackTraces().keySet().forEach(thread ->
+                System.out.println("Thread Name: " + thread.getName() + ", State: " + thread.getState())
+        );
+        System.out.println("======================\n");
+    }
     @Override
     public void start(Stage stage) throws Exception {
         // Initialize the main application and show the stage
@@ -28,6 +34,9 @@ public class HomeFormSystemTest  extends ApplicationTest{
     //i split it into 2 because there was a problem with my virtual and there were too many tasks
     @Test
     public void homeSystemTest1() throws InterruptedException {
+        displayActiveThreads();
+        Thread thread = new Thread(() -> {
+            try {
     clickOn("#member");
         Thread.sleep(1000);
 
@@ -45,11 +54,20 @@ public class HomeFormSystemTest  extends ApplicationTest{
 
     clickOn("#img_back");
         Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start();
+        thread.join(); // Ensures the main test thread waits for the spawned thread
     }
     @Test
     public void homeSystemTest2() throws InterruptedException {
 
-
+                displayActiveThreads();
+                Thread thread = new Thread(() -> {
+                    try {
         clickOn("#bk_return");
         Thread.sleep(1000);
 
@@ -62,6 +80,12 @@ public class HomeFormSystemTest  extends ApplicationTest{
         clickOn("#img_back");
         Thread.sleep(1000);
 
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+});
 
+        thread.start();
+        thread.join(); // Ensures the main test thread waits for the spawned thread
     }
 }
