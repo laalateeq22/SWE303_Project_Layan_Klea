@@ -28,7 +28,6 @@ public class BookSearchFormControllerTest {
         controller.tbl_bk = new TableView<>();
         controller.bk_sch = new TextField();
 
-        // Add columns to the TableView
         TableColumn<BookTM, String> idColumn = new TableColumn<>("id");
         TableColumn<BookTM, String> titleColumn = new TableColumn<>("title");
         TableColumn<BookTM, String> authorColumn = new TableColumn<>("author");
@@ -36,7 +35,6 @@ public class BookSearchFormControllerTest {
 
         controller.tbl_bk.getColumns().addAll(idColumn, titleColumn, authorColumn, statusColumn);
 
-        // Initialize the controller
         controller.initialize();
     }
 
